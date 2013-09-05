@@ -41,8 +41,49 @@ void create(string table_name, int num_attr, string data, ...){
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-void update(string relation_name, string left_arg, string right_arg, string condition, string data, ...){
+void update(string relation_name, string left_arg, string right_arg, string condition, string data, ...){       //need to rethink arguments
+	int VECTOR_INDEX, COLUMN_INDEX;
 
+	for(int i=0; i<RELATION_LIST.size(); i++)
+		if(relation_name == RELATION_LIST[i][0][0])
+			VECTOR_INDEX=i;
+
+	for(int i=0; i<RELATION_LIST[VECTOR_INDEX][1].size(); i++)
+		if(left_arg == RELATION_LIST[VECTOR_INDEX][1][i])
+			COLUMN_INDEX=i;
+	
+	switch (condition){
+		case "==":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					//update information
+			break;
+        case "!=":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					//update information
+            break;
+        case "<":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					//update information
+            break;
+		case ">":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					//update information
+            break;
+		case "<=":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					//update information
+            break;
+		case ">=":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					//update information
+            break;
+      }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 void insert_tuple(string data, ...){
