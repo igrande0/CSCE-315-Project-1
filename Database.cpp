@@ -38,10 +38,21 @@ void show(string table_name){
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 void create(string table_name, int num_attr, string data, ...){
+	vector<vector<string>> TEMP_TABLE;				//initialize temporary table that will be pushed into RELATION_TABLE vector  - JM
+	TEMP_TABLE[0][0] = table_name;					//initialize table name
+	va_list ATTRIBUTE_LIST;
+	va_start(ATTRIBUTE_LIST, data);
+	
+	for(int i=0; i<num_attr; i++){
+		TEMP_TABLE[1][i]=data;
+		va_arg(ATTRIBUTE_LIST, data);
+	}
 
+	va_end(ATTRIBUTE_LIST);
+	RELATION_TABLE.push_back(TEMP_TABLE);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-void update(string relation_name, string left_arg, string right_arg, string condition, string data, ...){       //need to rethink arguments
+void update(string relation_name, string left_arg, string right_arg, string condition, string data, ...){       //need to rethink arguments - JM
 	int VECTOR_INDEX, COLUMN_INDEX;
 
 	for(int i=0; i<RELATION_LIST.size(); i++)
