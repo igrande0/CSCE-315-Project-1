@@ -1,5 +1,7 @@
 #include "Database.h"
-//Function Definitions
+
+#define RELATION 0
+#define VIEW 1
 
 void select(string view_name, string in_table_name, string left_arg, string right_arg, string comparison){
 
@@ -12,45 +14,54 @@ void project(string view_name, string in_table_name, string attr, ...){
 /* rename all attributes in an existing table (can be a relation or view)
  * add resulting table into the view list
  */
-void rename(string out_table, string in_table, vector<string> attributes){
-	int relation_location = -1;
-	int view_location;
+void rename(string out_view_name, string in_table_name, vector<string> attributes){
+	int in_table_type;
+	int in_table_index = -1;
+	int out_view_index;
 
 	// look for table in relation list
-	for(int i=0; i<RELATION_LIST.size(); i++) 
-		if(in_table == RELATION_LIST[i][0][0]) {
-			relation_location=i;
+	for(int i = 0; i < RELATION_LIST.size(); ++i) 
+		if(in_table_name == RELATION_LIST[i][0][0]) {
+			in_table_index = i;
+			in_table_type = RELATION;
 			break;
 		}
 	
-	// look for table in view list
-	for(int i=0; i<VIEW_LIST.size(); i++) 
-		if(in_table == VIEW_LIST[i][0][0]) {
-			relation_location=i;
-			break;
-		}
+	// if table isn't found, look in view list
+	if(in_table_index == -1)
+		for(int i = 0; i < VIEW_LIST.size(); ++i) 
+			if(in_table_name == VIEW_LIST[i][0][0]) {
+				in_table_index = i;
+				in_table_type = VIEW;
+				break;
+			}
 
 	//*********BEGIN MISSING ERROR HANDLING***********
 	// ERROR - no such table 
-	if(relation_location == -1);
+	if(in_table_index == -1);
 		
 	// ERROR - incorrect number of attributes 
-	if(attributes.size() != RELATION_LIST[table_location][1].size());
+	if(in_table_type == RELATION && RELATION_LIST[in_table_index][1].size() != attributes.size());
+	if(in_table_type == VIEW && VIEW_LIST[in_table_index][1].size() != attributes.size());
 	//*********END MISSING ERROR HANDLING***********
 		
 	// create new view table with 2 rows (title and attribute rows)
 	VIEW_LIST.push_back(vector<vector<string>>(vector<string>(2));
-	view_location = VIEW_LIST.size() - 1;
+	out_view_index = VIEW_LIST.size() - 1;
 
 	// set title
-	VIEW_LIST[view_location][0].push_back(out_table);
+	VIEW_LIST[out_view_index][0].push_back(out_view_name);
 	
 	// set attributes
-	VIEW_LIST[view_location][1] = attributes;
+	VIEW_LIST[out_view_index][1] = attributes;
 
 	// copy remaining data
-	for(int i = 2; i < RELATION_LIST[relation_location].size(); ++i)
-		VIEW_LIST.push_back(RELATION_LIST[relation_location][i]);
+	if(in_table_type == RELATION)
+		for(int i = 2; i < RELATION_LIST[in_table_index].size(); ++i)
+			VIEW_LIST[out_view_index].push_back(RELATION_LIST[in_table_index][i]);
+	else
+		for(int i = 2; i < VIEW_LIST[in_table_index].size(); ++i)
+			VIEW_LIST[out_view_index].push_back(VIEW_LIST[in_table_index][i]);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 void set_union(string view_name, string relation1_name, string relation2_name){
