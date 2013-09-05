@@ -8,16 +8,49 @@ void select(string view_name, string in_table_name, string left_arg, string righ
 void project(string view_name, string in_table_name, string attr, ...){
 
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void rename(string relation_name, string attr, ...){                      //need more arguments? - JM
-	int VECTOR_INDEX;
 
-	for(int i=0; i<RELATION_LIST.size(); i++)
-		if(relation_name == RELATION_LIST[i][0][0])
-			VECTOR_INDEX=i;
-	//need original attribute names as well as new ones - JM
-	//possibly pass an int to tell how many attributes are beign changed
+/* rename all attributes in an existing table (can be a relation or view)
+ * add resulting table into the view list
+ */
+void rename(string out_table, string in_table, vector<string> attributes){
+	int relation_location = -1;
+	int view_location;
 
+	// look for table in relation list
+	for(int i=0; i<RELATION_LIST.size(); i++) 
+		if(in_table == RELATION_LIST[i][0][0]) {
+			relation_location=i;
+			break;
+		}
+	
+	// look for table in view list
+	for(int i=0; i<VIEW_LIST.size(); i++) 
+		if(in_table == VIEW_LIST[i][0][0]) {
+			relation_location=i;
+			break;
+		}
+
+	//*********BEGIN MISSING ERROR HANDLING***********
+	// ERROR - no such table 
+	if(relation_location == -1);
+		
+	// ERROR - incorrect number of attributes 
+	if(attributes.size() != RELATION_LIST[table_location][1].size());
+	//*********END MISSING ERROR HANDLING***********
+		
+	// create new view table with 2 rows (title and attribute rows)
+	VIEW_LIST.push_back(vector<vector<string>>(vector<string>(2));
+	view_location = VIEW_LIST.size() - 1;
+
+	// set title
+	VIEW_LIST[view_location][0].push_back(out_table);
+	
+	// set attributes
+	VIEW_LIST[view_location][1] = attributes;
+
+	// copy remaining data
+	for(int i = 2; i < RELATION_LIST[relation_location].size(); ++i)
+		VIEW_LIST.push_back(RELATION_LIST[relation_location][i]);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 void set_union(string view_name, string relation1_name, string relation2_name){
