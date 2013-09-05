@@ -9,7 +9,14 @@ void project(string view_name, string in_table_name, string attr, ...){
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-void rename(string relation_name, string attr, ...){
+void rename(string relation_name, string attr, ...){                      //need more arguments? - JM
+	int VECTOR_INDEX;
+
+	for(int i=0; i<RELATION_LIST.size(); i++)
+		if(relation_name == RELATION_LIST[i][0][0])
+			VECTOR_INDEX=i;
+	//need original attribute names as well as new ones - JM
+	//possibly pass an int to tell how many attributes are beign changed
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -115,10 +122,14 @@ void insert_tuple(string data, ...){
 	va_end(ARGUMENT_LIST);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-void insert_view(string table_name){
+void insert_view(string table_name){                 //need to pass a vector of vectors or an index to a view table - JM
+	int VECTOR_INDEX;
 
+	for(int i=0; i<RELATION_LIST.size(); i++)
+		if(relation_name == RELATION_LIST[i][0][0])
+			VECTOR_INDEX=i;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 void remove(string table_name, string left_arg, string right_arg, string comparison){
-
+	
 }
