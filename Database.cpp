@@ -3,18 +3,22 @@
 #define RELATION 0
 #define VIEW 1
 
-void select(string view_name, string in_table_name, string left_arg, string right_arg, string comparison){
+/*------------------------------------------------------------------------------------*/
+/* QUERY FUNCTIONS */
+/*------------------------------------------------------------------------------------*/
+
+void Database::select(string view_name, string in_table_name, string left_arg, string right_arg, string comparison){
 
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void project(string view_name, string in_table_name, string attr, ...){
+
+void Database::project(string view_name, string in_table_name, vector<string> attributes){
 
 }
 
 /* rename all attributes in an existing table (can be a relation or view)
  * add resulting table into the view list
  */
-void rename(string out_view_name, string in_table_name, vector<string> attributes){
+void Database::rename(string out_view_name, string in_table_name, vector<string> attributes){
 	int in_table_type;
 	int in_table_index = -1;
 	int out_view_index;
@@ -46,7 +50,7 @@ void rename(string out_view_name, string in_table_name, vector<string> attribute
 	//*********END MISSING ERROR HANDLING***********
 		
 	// create new view table with 2 rows (title and attribute rows)
-	VIEW_LIST.push_back(vector<vector<string>>(vector<string>(2));
+	VIEW_LIST.push_back(vector<vector<string> >(2));
 	out_view_index = VIEW_LIST.size() - 1;
 
 	// set title
@@ -63,34 +67,38 @@ void rename(string out_view_name, string in_table_name, vector<string> attribute
 		for(int i = 2; i < VIEW_LIST[in_table_index].size(); ++i)
 			VIEW_LIST[out_view_index].push_back(VIEW_LIST[in_table_index][i]);
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void set_union(string view_name, string relation1_name, string relation2_name){
+
+void Database::set_union(string view_name, string relation1_name, string relation2_name){
 
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void set_difference(string view_name, string relation1_name, string relation2_name){
+
+void Database::set_difference(string view_name, string relation1_name, string relation2_name){
 
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void cross_product(string view_name, string relation1_name, string relation2_name){
+
+void Database::cross_product(string view_name, string relation1_name, string relation2_name){
 
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void close(string table_name){
+
+/*------------------------------------------------------------------------------------*/
+/* COMMAND FUNCTIONS */
+/*------------------------------------------------------------------------------------*/
+
+void Database::close(string table_name){
 
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void write(string table_name){
+
+void Database::write(string table_name){
 
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void show(string table_name){
+
+void Database::show(string table_name){
 
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void create(string table_name, int num_attr, string data, ...){
-	vector<vector<string>> TEMP_TABLE;				//initialize temporary table that will be pushed into RELATION_TABLE vector  - JM
-	TEMP_TABLE[0][0] = table_name;					//initialize table name
+
+void Database::create(string table_name, vector<string> attributes, vector<string> keys){
+	//vector<vector<string>> TEMP_TABLE;				//initialize temporary table that will be pushed into RELATION_TABLE vector  - JM
+	/*TEMP_TABLE[0][0] = table_name;					//initialize table name
 	va_list ATTRIBUTE_LIST;
 	va_start(ATTRIBUTE_LIST, data);
 	
@@ -100,11 +108,11 @@ void create(string table_name, int num_attr, string data, ...){
 	}
 
 	va_end(ATTRIBUTE_LIST);
-	RELATION_TABLE.push_back(TEMP_TABLE);
+	RELATION_TABLE.push_back(TEMP_TABLE);*/
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void update(string relation_name, string left_arg, string right_arg, string condition, string data, ...){       //need to rethink arguments - JM
-	int VECTOR_INDEX, COLUMN_INDEX;
+
+void Database::update(string relation_name, string left_arg, string right_arg, string condition, string data, ...){       //need to rethink arguments - JM
+	/*int VECTOR_INDEX, COLUMN_INDEX;
 
 	for(int i=0; i<RELATION_LIST.size(); i++)
 		if(relation_name == RELATION_LIST[i][0][0])
@@ -145,35 +153,57 @@ void update(string relation_name, string left_arg, string right_arg, string cond
 				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					//update information
             break;
-      }
+      }*/
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void insert_tuple(string data, ...){
-	va_list ARGUMENT_LIST;
-	va_start(ARGUMENT_LIST, data);
-	int VECTOR_INDEX;
 
-	for(int i=0; i<RELATION_LIST.size(); i++)
-		if(data == RELATION_LIST[i][0][0])
-			VECTOR_INDEX=i;
+void Database::insert_tuple(string relation_name, vector<string> tuple){
+	int table_index = -1;
 
-	va_arg(ARGUMENT_LIST, string);
+	// find location of relation table
+	for(int i = 0; i < RELATION_LIST.size(); i++)
+		if(relation_name == RELATION_LIST[i][0][0]) {
+			table_index = i;
+			break;
+		}
 
-	for(int i=0; data != NULL; i++){
-		RELATION_LIST[VECTOR_INDEX][][] = data;			//need to find insert correct indicies - JM
-		va_arg(ARGUMENT_LIST, string);
-	}
-	va_end(ARGUMENT_LIST);
+	//*********BEGIN MISSING ERROR HANDLING***********
+	// ERROR - no such table 
+	if(table_index == -1);
+	//*********END MISSING ERROR HANDLING***********
+
+	// add new tuple to the end of the table
+	RELATION_LIST[table_index].push_back(tuple);
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void insert_view(string table_name){                 //need to pass a vector of vectors or an index to a view table - JM
-	int VECTOR_INDEX;
 
-	for(int i=0; i<RELATION_LIST.size(); i++)
-		if(relation_name == RELATION_LIST[i][0][0])
-			VECTOR_INDEX=i;
+void Database::insert_view(string relation_name, string view_name){
+	int view_index = -1;
+	int relation_index = -1;
+
+	// find location of view table
+	for(int i = 0; i < VIEW_LIST.size(); i++)
+		if(view_name == VIEW_LIST[i][0][0]) {
+			view_index = i;
+			break;
+		}
+
+	// find location of relation table
+	for(int i = 0; i < RELATION_LIST.size(); i++)
+		if(relation_name == RELATION_LIST[i][0][0]) {
+			relation_index = i;
+			break;
+		}
+
+	//*********BEGIN MISSING ERROR HANDLING***********
+	// ERROR - no such table 
+	if(view_index == -1);
+	if(relation_index == -1);
+	//*********END MISSING ERROR HANDLING***********
+
+	// copy values from view table to relation table
+	for(int i = 2; i < VIEW_LIST[relation_index].size(); ++i)
+		RELATION_LIST[i].push_back(VIEW_LIST[relation_index][i]);
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-void remove(string table_name, string left_arg, string right_arg, string comparison){
+
+void Database::remove(string table_name, string left_arg, string right_arg, string comparison){
 	
 }

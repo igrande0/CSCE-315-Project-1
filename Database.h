@@ -1,7 +1,11 @@
+#ifndef DATABASE_H_
+#define DATABASE_H_
+
 #include <cstdarg>
 #include <string>
 #include <vector>
 
+using namespace std;
 
 class Database{
 private:
@@ -12,27 +16,28 @@ private:
 	 * v[3][x] <= tuple
 	 * ...
 	 */
-	typedef vector<vector<string>> Table;
 
-	vector<Table> RELATION_LIST;
-	vector<Table> VIEW_LIST;
+	vector<vector<vector<string> > > RELATION_LIST;
+	vector<vector<vector<string> > > VIEW_LIST;
 
 public:
-	//Query Functions
+	// Query Functions
 	void select(string view_name, string in_table_name, string left_arg, string right_arg, string comparison);
-	void project(string view_name, string in_table_name, string attr, ...);
-	void rename(string relation_name, string attr, ...);
-	void set_union(string view_name, string relation1_name, string relation2_name);
-	void set_difference(string view_name, string relation1_name, string relation2_name);
-	void cross_product(string view_name, string relation1_name, string relation2_name);
+	void project(string view_name, string in_table_name, vector<string> attributes);
+	void rename(string out_view_name, string in_table_name, vector<string> attributes);
+	void set_union(string view_name, string table1_name, string table2_name);
+	void set_difference(string view_name, string table1_name, string table2_name);
+	void cross_product(string view_name, string table1_name, string table2_name);
     
-	//Command Functions
+	// Command Functions
 	void close(string table_name);
 	void write(string table_name);
 	void show(string table_name);
-	void create(string table_name, int num_attr, string data, ...);
+	void create(string table_name, vector<string> attributes, vector<string> keys);
 	void update(string relation_name, string left_arg, string right_arg, string condition, string data, ...);
-	void insert_tuple(string data, ...);
-	void insert_view(string table_name);
+	void insert_tuple(string relation_name, vector<string> tuple);
+	void insert_view(string relation_name, string view_name);
 	void remove(string table_name, string left_arg, string right_arg, string comparison);
 };
+
+#endif
