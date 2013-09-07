@@ -111,9 +111,9 @@ void Database::create(string table_name, vector<string> attributes, vector<strin
 	RELATION_TABLE.push_back(TEMP_TABLE);*/
 }
 
-void Database::update(string relation_name, string left_arg, string right_arg, string condition, string data, ...){       //need to rethink arguments - JM
+void Database::update(string relation_name, string left_arg, string right_arg, string condition, vector<string> attributes){       //need to rethink arguments - JM
 	/*int VECTOR_INDEX, COLUMN_INDEX;
-
+	vector<int> ROW_INDECIES;
 	for(int i=0; i<RELATION_LIST.size(); i++)
 		if(relation_name == RELATION_LIST[i][0][0])
 			VECTOR_INDEX=i;
@@ -126,33 +126,36 @@ void Database::update(string relation_name, string left_arg, string right_arg, s
 		case "==":
 			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					//update information
+					ROW_INDICIES.push_back(i);	
 			break;
-        case "!=":
+        	case "!=":
 			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					//update information
-            break;
-        case "<":
+					ROW_INDICIES.push_back(i);
+            		break;
+        	case "<":
 			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					//update information
-            break;
+					ROW_INDICIES.push_back(i);
+            		break;
 		case ">":
 			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					//update information
-            break;
+					ROW_INDICIES.push_back(i);
+            		break;
 		case "<=":
 			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					//update information
-            break;
+					ROW_INDICIES.push_back(i);
+            		break;
 		case ">=":
 			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					//update information
-            break;
+					ROW_INDICIES.push_back(i);
+            		break;
+      }
+      for(int i=0; i< ROW_INDICIES.size(); i++){
+      	      RELATION_LIST[VECTOR_INDEX][ROW_INDICIES[i]][COLUMN_INDEX] == attributes[0];	
       }*/
 }
 
