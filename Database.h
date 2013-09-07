@@ -10,10 +10,11 @@ using namespace std;
 class Database{
 private:
 	/* Table format:
-	 * v[0][0] <= title of table
-	 * v[1][x] <= attribute list
-	 * v[2][x] <= tuple
-	 * v[3][x] <= tuple
+	 * table[0][0] <= title of table; table[0][1], table [0][2]... <= keys
+	 * table[1][x] <= attribute list
+	 * table[2][x] <= attribute types
+	 * table[3][x] <= tuple
+	 * table[4][x] <= tuple
 	 * ...
 	 */
 
