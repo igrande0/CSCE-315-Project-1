@@ -85,11 +85,11 @@ void Database::cross_product(string view_name, string relation1_name, string rel
 /*------------------------------------------------------------------------------------*/
 
 void Database::close(string table_name){
-
+	//dont need for monday Sept. 9th submission
 }
 
 void Database::write(string table_name){
-
+	//dont need for monday Sept. 9th submission
 }
 
 void Database::show(string table_name){
@@ -130,27 +130,27 @@ void Database::update(string relation_name, string left_arg, string right_arg, s
 			break;
         	case "!=":
 			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+				if(right_arg != RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					ROW_INDICIES.push_back(i);
             		break;
         	case "<":
 			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+				if(right_arg < RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					ROW_INDICIES.push_back(i);
             		break;
 		case ">":
 			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+				if(right_arg > RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					ROW_INDICIES.push_back(i);
             		break;
 		case "<=":
 			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+				if(right_arg <= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					ROW_INDICIES.push_back(i);
             		break;
 		case ">=":
 			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+				if(right_arg >= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					ROW_INDICIES.push_back(i);
             		break;
       }
@@ -208,5 +208,45 @@ void Database::insert_view(string relation_name, string view_name){
 }
 
 void Database::remove(string table_name, string left_arg, string right_arg, string comparison){
+	/*int VECTOR_INDEX, COLUMN_INDEX = -1;
+	vector<int> ROW_INDECIES;
+	for(int i=0; i<RELATION_LIST.size(); i++)
+		if(relation_name == RELATION_LIST[i][0][0])
+			VECTOR_INDEX=i;
+	for(int i=0; i<RELATION_LIST[VECTOR_INDEX][1].size(); i++)
+		if(left_arg == RELATION_LIST[VECTOR_INDEX][1][i])
+			COLUMN_INDEX=i;
 	
+	switch (condition){
+		case "==":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);	
+			break;
+        	case "!=":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg != RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);
+            		break;
+        	case "<":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg < RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);
+            		break;
+		case ">":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg > RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);
+            		break;
+		case "<=":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg <= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);
+            		break;
+		case ">=":
+			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+				if(right_arg >= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
+					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);
+            		break;
+      }*/
 }
