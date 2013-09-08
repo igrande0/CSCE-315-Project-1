@@ -10,7 +10,51 @@
 /*------------------------------------------------------------------------------------*/
 
 void Database::select(string view_name, string in_table_name, string left_arg, string right_arg, string comparison){
+	int VIEW_INDEX, VIEW_COLUMN = -1;
+	vector<vector<string>> TEMP_VIEW_TABLE;
 
+	for(unsigned int i =0; i<VIEW_LIST.size(); i++)
+		if(VIEW_LIST[i][0][0] == view_name)
+			VIEW_INDEX = i;
+	for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX][1].size(); i++)
+		if(VIEW_LIST[VIEW_INDEX][1][i] == left_arg)
+			VIEW_COLUMN = i;
+
+	//need to initialize view table headings
+	//TEMP_VIEW_TABLE.push_back(table name);
+	//push_back attributes and types
+	switch (comparison){
+		case "==":
+			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
+				if(right_arg == VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
+					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);	
+			break;
+        case "!=":
+			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
+				if(right_arg != VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
+					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);
+            		break;
+        case "<":
+			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
+				if(right_arg < VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
+					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);
+        break;
+		case ">":
+			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
+				if(right_arg > VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
+					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);
+        break;
+		case "<=":
+			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
+				if(right_arg <= VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
+					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);
+        break;
+		case ">=":
+			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
+				if(right_arg >= VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
+					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);
+        break;
+      }
 }
 
 void Database::project(string view_name, string in_table_name, vector<string> attributes){
