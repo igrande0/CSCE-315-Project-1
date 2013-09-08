@@ -26,7 +26,7 @@ void Database::rename(string out_view_name, string in_table_name, vector<string>
 	int out_view_index;
 
 	// look for table in relation list
-	for(int i = 0; i < RELATION_LIST.size(); ++i) 
+	for(unsigned int i = 0; i < RELATION_LIST.size(); ++i) 
 		if(in_table_name == RELATION_LIST[i][0][0]) {
 			in_table_index = i;
 			in_table_type = RELATION;
@@ -35,7 +35,7 @@ void Database::rename(string out_view_name, string in_table_name, vector<string>
 	
 	// if table isn't found, look in view list
 	if(in_table_index == -1)
-		for(int i = 0; i < VIEW_LIST.size(); ++i) 
+		for(unsigned int i = 0; i < VIEW_LIST.size(); ++i) 
 			if(in_table_name == VIEW_LIST[i][0][0]) {
 				in_table_index = i;
 				in_table_type = VIEW;
@@ -63,10 +63,10 @@ void Database::rename(string out_view_name, string in_table_name, vector<string>
 
 	// copy remaining data
 	if(in_table_type == RELATION)
-		for(int i = 2; i < RELATION_LIST[in_table_index].size(); ++i)
+		for(unsigned int i = 2; i < RELATION_LIST[in_table_index].size(); ++i)
 			VIEW_LIST[out_view_index].push_back(RELATION_LIST[in_table_index][i]);
 	else
-		for(int i = 2; i < VIEW_LIST[in_table_index].size(); ++i)
+		for(unsigned int i = 2; i < VIEW_LIST[in_table_index].size(); ++i)
 			VIEW_LIST[out_view_index].push_back(VIEW_LIST[in_table_index][i]);
 }
 
@@ -104,7 +104,7 @@ void Database::create(string table_name, vector<string> attributes, vector<strin
 	va_list ATTRIBUTE_LIST;
 	va_start(ATTRIBUTE_LIST, data);
 	
-	for(int i=0; i<num_attr; i++){
+	for(unsigned int i=0; i<num_attr; i++){
 		TEMP_TABLE[1][i]=data;
 		va_arg(ATTRIBUTE_LIST, data);
 	}
@@ -116,47 +116,47 @@ void Database::create(string table_name, vector<string> attributes, vector<strin
 void Database::update(string relation_name, string left_arg, string right_arg, string condition, vector<string> attributes){       //need to rethink arguments - JM
 	/*int VECTOR_INDEX, COLUMN_INDEX;
 	vector<int> ROW_INDECIES;
-	for(int i=0; i<RELATION_LIST.size(); i++)
+	for(unsigned int i=0; i<RELATION_LIST.size(); i++)
 		if(relation_name == RELATION_LIST[i][0][0])
 			VECTOR_INDEX=i;
 
-	for(int i=0; i<RELATION_LIST[VECTOR_INDEX][1].size(); i++)
+	for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX][1].size(); i++)
 		if(left_arg == RELATION_LIST[VECTOR_INDEX][1][i])
 			COLUMN_INDEX=i;
 	
 	switch (condition){
 		case "==":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					ROW_INDICIES.push_back(i);	
 			break;
         	case "!=":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg != RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					ROW_INDICIES.push_back(i);
             		break;
         	case "<":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg < RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					ROW_INDICIES.push_back(i);
             		break;
 		case ">":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg > RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					ROW_INDICIES.push_back(i);
             		break;
 		case "<=":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg <= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					ROW_INDICIES.push_back(i);
             		break;
 		case ">=":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
+			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
 				if(right_arg >= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
 					ROW_INDICIES.push_back(i);
             		break;
       }
-      for(int i=0; i< ROW_INDICIES.size(); i++){
+      for(unsigned int i=0; i< ROW_INDICIES.size(); i++){
       	      RELATION_LIST[VECTOR_INDEX][ROW_INDICIES[i]][COLUMN_INDEX] == attributes[0];	
       }*/
 }
@@ -165,7 +165,7 @@ void Database::insert_tuple(string relation_name, vector<string> tuple){
 	int table_index = -1;
 
 	// find location of relation table
-	for(int i = 0; i < RELATION_LIST.size(); i++)
+	for(unsigned int i = 0; i < RELATION_LIST.size(); i++)
 		if(relation_name == RELATION_LIST[i][0][0]) {
 			table_index = i;
 			break;
@@ -185,14 +185,14 @@ void Database::insert_view(string relation_name, string view_name){
 	int relation_index = -1;
 
 	// find location of view table
-	for(int i = 0; i < VIEW_LIST.size(); i++)
+	for(unsigned int i = 0; i < VIEW_LIST.size(); i++)
 		if(view_name == VIEW_LIST[i][0][0]) {
 			view_index = i;
 			break;
 		}
 
 	// find location of relation table
-	for(int i = 0; i < RELATION_LIST.size(); i++)
+	for(unsigned int i = 0; i < RELATION_LIST.size(); i++)
 		if(relation_name == RELATION_LIST[i][0][0]) {
 			relation_index = i;
 			break;
@@ -205,22 +205,22 @@ void Database::insert_view(string relation_name, string view_name){
 	//*********END MISSING ERROR HANDLING***********
 
 	// copy values from view table to relation table
-	for(int i = 2; i < VIEW_LIST[relation_index].size(); ++i)
+	for(unsigned int i = 2; i < VIEW_LIST[relation_index].size(); ++i)
 		RELATION_LIST[i].push_back(VIEW_LIST[relation_index][i]);
 }
 
-void Database::remove(string table_name, string attribute_name, string right_arg, string comparison_op){
+void Database::remove(string relation_name, string attribute_name, string right_arg, string comparison_op){
 	int relation_index = -1;
-	int COLUMN_INDEX = -1;
+	int column_index = -1;
 	string attribute_type;
 
-	for(int i = 0; i < RELATION_LIST.size(); i++)
+	for(unsigned int i = 0; i < RELATION_LIST.size(); i++)
 		if(relation_name == RELATION_LIST[i][0][0])
 			relation_index=i;
 
-	for(int i = 0; i < RELATION_LIST[relation_index][1].size(); i++)
+	for(unsigned int i = 0; i < RELATION_LIST[relation_index][1].size(); i++)
 		if(attribute_name == RELATION_LIST[relation_index][1][i])
-			column_index=i;
+			column_index = i;
 
 	//*********BEGIN MISSING ERROR HANDLING***********
 	// ERROR - no such table 
@@ -231,30 +231,31 @@ void Database::remove(string table_name, string attribute_name, string right_arg
 
 	attribute_type = RELATION_LIST[relation_index][2][column_index];
 	
-	for(int i=0; i<RELATION_LIST[relation_index].size(); i++)
+	for(unsigned int i=0; i<RELATION_LIST[relation_index].size(); i++)
 		if(compare(attribute_type, RELATION_LIST[relation_index][i][column_index], right_arg, comparison_op))
 			RELATION_LIST[relation_index].erase(RELATION_LIST[relation_index].begin()+i);	
 }
 
 bool Database::compare(string attribute_type, string left_arg, string right_arg, string comparison_op) {
+	bool result;
 	switch(attribute_type[0]) {
 		// INT or INTEGER
 		case 'I':
-			return compare<int>(stoi(left_arg), stoi(right_arg), comparison_op);
+			result = compare<int>(stoi(left_arg), stoi(right_arg), comparison_op);
 
 		// FLOAT  or REAL
 		case 'F': case 'R':
-			return compare<float>(stof(left_arg), stof(right_arg), comparison_op); 
+			result = compare<float>(stof(left_arg), stof(right_arg), comparison_op); 
 
 		// CHAR or VARCHAR
 		case 'C': case 'V':
-			return compare<string>(left_arg, right_arg, comparison_op);
+			result = compare<string>(left_arg, right_arg, comparison_op);
 
 		// DATE or TIME 
-		case 'D': case 'T': {
-			return compare<int>(extract_digits(left_arg), extract_digits(right_arg), comparison_op);
-		}
+		case 'D': case 'T':
+			result = compare<int>(extract_digits(left_arg), extract_digits(right_arg), comparison_op);
 	}
+	return result;
 }
 
 template <class T> bool Database::compare(T left_arg, T right_arg, string comparison_op) {
@@ -268,12 +269,12 @@ template <class T> bool Database::compare(T left_arg, T right_arg, string compar
 		return left_arg > right_arg;
 	else if(comparison_op == "<=")
 		return left_arg <= right_arg;
-	else if(comparison_op == ">=")
+	else
 		return left_arg >= right_arg;
 }
 
 int Database::extract_digits(string input) {
-	for(int i = input.size(); i > 0; --i)
+	for(unsigned int i = input.size(); i > 0; --i)
 		if(!isdigit(input[i-1]))
 			input.erase(input.begin() + i);
 
