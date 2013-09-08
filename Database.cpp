@@ -1,5 +1,7 @@
 #include "Database.h"
 
+#include <cctype>
+
 #define RELATION 0
 #define VIEW 1
 
@@ -207,46 +209,73 @@ void Database::insert_view(string relation_name, string view_name){
 		RELATION_LIST[i].push_back(VIEW_LIST[relation_index][i]);
 }
 
-void Database::remove(string table_name, string left_arg, string right_arg, string comparison){
-	/*int VECTOR_INDEX, COLUMN_INDEX = -1;
-	vector<int> ROW_INDECIES;
-	for(int i=0; i<RELATION_LIST.size(); i++)
+void Database::remove(string table_name, string attribute_name, string right_arg, string comparison_op){
+	int relation_index = -1;
+	int COLUMN_INDEX = -1;
+	string attribute_type;
+
+	for(int i = 0; i < RELATION_LIST.size(); i++)
 		if(relation_name == RELATION_LIST[i][0][0])
-			VECTOR_INDEX=i;
-	for(int i=0; i<RELATION_LIST[VECTOR_INDEX][1].size(); i++)
-		if(left_arg == RELATION_LIST[VECTOR_INDEX][1][i])
-			COLUMN_INDEX=i;
+			relation_index=i;
+
+	for(int i = 0; i < RELATION_LIST[relation_index][1].size(); i++)
+		if(attribute_name == RELATION_LIST[relation_index][1][i])
+			column_index=i;
+
+	//*********BEGIN MISSING ERROR HANDLING***********
+	// ERROR - no such table 
+	if(relation_index == -1);
+	// ERROR - no such attribute
+	if(column_index == -1);
+	//*********END MISSING ERROR HANDLING***********
+
+	attribute_type = RELATION_LIST[relation_index][2][column_index];
 	
-	switch (condition){
-		case "==":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);	
-			break;
-        	case "!=":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg != RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);
-            		break;
-        	case "<":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg < RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);
-            		break;
-		case ">":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg > RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);
-            		break;
-		case "<=":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg <= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);
-            		break;
-		case ">=":
-			for(int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg >= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					RELATION_LIST[VECTOR_INDEX].erase(RELATION_LIST[VECTOR_INDEX].begin()+i);
-            		break;
-      }*/
+	for(int i=0; i<RELATION_LIST[relation_index].size(); i++)
+		if(compare(attribute_type, RELATION_LIST[relation_index][i][column_index], right_arg, comparison_op))
+			RELATION_LIST[relation_index].erase(RELATION_LIST[relation_index].begin()+i);	
+}
+
+bool Database::compare(string attribute_type, string left_arg, string right_arg, string comparison_op) {
+	switch(attribute_type[0]) {
+		// INT or INTEGER
+		case 'I':
+			return compare<int>(stoi(left_arg), stoi(right_arg), comparison_op);
+
+		// FLOAT  or REAL
+		case 'F': case 'R':
+			return compare<float>(stof(left_arg), stof(right_arg), comparison_op); 
+
+		// CHAR or VARCHAR
+		case 'C': case 'V':
+			return compare<string>(left_arg, right_arg, comparison_op);
+
+		// DATE or TIME 
+		case 'D': case 'T': {
+			return compare<int>(extract_digits(left_arg), extract_digits(right_arg), comparison_op);
+		}
+	}
+}
+
+template <class T> bool Database::compare(T left_arg, T right_arg, string comparison_op) {
+	if(comparison_op == "==")
+		return left_arg == right_arg;
+	else if(comparison_op == "!=")
+		return left_arg != right_arg;
+	else if(comparison_op == "<")
+		return left_arg < right_arg;
+	else if(comparison_op == ">")
+		return left_arg > right_arg;
+	else if(comparison_op == "<=")
+		return left_arg <= right_arg;
+	else if(comparison_op == ">=")
+		return left_arg >= right_arg;
+}
+
+int Database::extract_digits(string input) {
+	for(int i = input.size(); i > 0; --i)
+		if(!isdigit(input[i-1]))
+			input.erase(input.begin() + i);
+
+	return stoi(input);
 }

@@ -16,10 +16,22 @@ private:
 	 * table[3][x] <= tuple
 	 * table[4][x] <= tuple
 	 * ...
+	 *
+	 * Attribute Types:
+	 * INT, INTEGER
+	 * FLOAT, REAL
+	 * CHAR(n)
+	 * VARCHAR(n)
+	 * DATE (data stored as yyyy-mm-dd)
+	 * TIME (data stored as hh:mm:ss)
 	 */
 
 	vector<vector<vector<string> > > RELATION_LIST;
 	vector<vector<vector<string> > > VIEW_LIST;
+
+	bool compare(string attribute_type, string left_arg, string right_arg, string comparison_op);
+	template <class T> bool compare(T left_arg, T right_arg, string comparison_op);
+	int extract_digits(string input);
 
 public:
 	// Query Functions
@@ -38,7 +50,7 @@ public:
 	void update(string relation_name, string left_arg, string right_arg, string condition, vector<string> attributes);
 	void insert_tuple(string relation_name, vector<string> tuple);
 	void insert_view(string relation_name, string view_name);
-	void remove(string table_name, string left_arg, string right_arg, string comparison);
+	void remove(string table_name, string attribute_name, string right_arg, string comparison_op);
 };
 
 #endif
