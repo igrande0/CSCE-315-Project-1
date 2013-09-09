@@ -31,12 +31,13 @@ private:
 
 	template <class T> bool compare(T left_arg, T right_arg, string comparison_op);
 	int extract_digits(string input);
+	void print_table(const vector<vector<string > >& table);
 
 public:
 	// Query Functions
 	void select(string view_name, string in_table_name, int row_index);
 	void project(string view_name, string in_table_name, vector<string> attributes);
-	void rename(string out_view_name, string in_table_name, vector<string> attributes);
+	void rename(string view_name, string in_table_name, vector<string> attributes);
 	void set_union(string view_name, string table1_name, string table2_name);
 	void set_difference(string view_name, string table1_name, string table2_name);
 	void cross_product(string view_name, string table1_name, string table2_name);
@@ -51,7 +52,7 @@ public:
 	void insert_view(string relation_name, string view_name);
 	void remove(string table_name, int row_index);					
 
-	//utility functions
+	// Utility Functions
 	int get_relation_index(string table_name);
 	int get_attribute_index(int table_type, int table_index, string attribute_name);
 	int get_view_index(string table_name);

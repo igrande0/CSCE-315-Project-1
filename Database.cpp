@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <iostream>
+#include <iomanip>
 
 #define RELATION 0
 #define VIEW 1
@@ -44,14 +45,21 @@ void Database::project(string view_name, string in_table_name, vector<string> at
 	int RELATION_INDEX = get_relation_index(in_table_name);
 	vector<vector<string>> TEMP_VIEW_TABLE;
 	vector<int> columns;
-	for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX][1].size(); i++)
+	
+	
+	
+	for(unsigned int i = 0; i<RELATION_LIST[RELATION_INDEX][1].size(); i++)
 		for(unsigned int j=0; j<attributes.size(); j++)
 			if(attributes[j] == RELATION_LIST[RELATION_INDEX][1][i])
 				columns.push_back(i);
-	for(unsigned int i=0; i< RELATION_LIST[RELATION_INDEX].size(); i++){
+	vector<string> t_vec;
+	t_vec.push_back(view_name);
+	TEMP_VIEW_TABLE.push_back(t_vec);
+	 
+	for(unsigned int i=1; i< RELATION_LIST[RELATION_INDEX].size(); i++){
 		vector<string> temp_vec;
 		for(unsigned int j=0; j<columns.size(); j++)
-			temp_vec.push_back(RELATION_LIST[RELATION_INDEX][i][j]);
+			temp_vec.push_back(RELATION_LIST[RELATION_INDEX][i][columns[j]]);
 		TEMP_VIEW_TABLE.push_back(temp_vec);
 	}
 	VIEW_LIST.push_back(TEMP_VIEW_TABLE);
@@ -197,27 +205,28 @@ void Database::show(string table_name){
 		TABLE_TYPE = VIEW;
 	}
 	if(TABLE_TYPE == RELATION){
-		cout<<RELATION_LIST[INDEX][0][0]<<" (";
-		for(unsigned int i=1; i<RELATION_LIST[INDEX][0].size(); i++)
-			cout<<RELATION_LIST[INDEX][0][i]<<",";
-		cout<<")"<<endl;
-		for(unsigned int i=1; i<RELATION_LIST[INDEX].size(); i++) {
-			for(unsigned int j=0; j<RELATION_LIST[INDEX][i].size(); j++){
-				cout<<RELATION_LIST[INDEX][i][j]<<"\t";
-			}
-			cout<<endl;
-		}
+		print_table(RELATION_LIST[INDEX]);
 	}
 	else{
-		cout<<VIEW_LIST[INDEX][0][0]<<" (";
-		for(unsigned int i=1; i<VIEW_LIST[INDEX][0].size(); i++)
-			cout<<VIEW_LIST[INDEX][0][i]<<",";
-		cout<<")"<<endl;
-		for(unsigned int i=1; i<VIEW_LIST[INDEX].size(); i++)
-			for(unsigned int j=0; j<VIEW_LIST[INDEX][i].size(); j++){
-				cout<<VIEW_LIST[INDEX][i][j]<<"\t";
-			}
-		cout<<endl;
+		print_table(VIEW_LIST[INDEX]);
+	}
+}
+
+void Database::print_table(const vector<vector<string > >& table) {
+	cout << table[0][0] << "\t\t keys(";
+	for(unsigned int i = 1; i < table[0].size(); i++) {
+		cout << table[0][i];
+		if(i != (table[0].size()-1))
+			cout << ",";
+	}
+	cout << ")" << endl;
+	
+	for(unsigned int i = 1; i < table.size(); i++) {
+		for(unsigned int j = 0; j < table[i].size(); j++){
+			cout << left << setw(15);
+			cout << table[i][j];
+		}
+		cout << endl;
 	}
 }
 
@@ -287,8 +296,8 @@ void Database::insert_view(string relation_name, string view_name){
 		; // RETURN ERROR
 
 	// copy values from view table to relation table
-	for(unsigned int i = 3; i < VIEW_LIST[relation_index].size(); ++i)
-		RELATION_LIST[i].push_back(VIEW_LIST[relation_index][i]);
+	for(unsigned int i = 3; i < VIEW_LIST[view_index].size(); ++i)
+		RELATION_LIST[relation_index].push_back(VIEW_LIST[view_index][i]);
 }
 
 void Database::remove(string relation_name, int row_index){
