@@ -168,13 +168,12 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 		{
 			for (unsigned int l = 0; l <RELATION_LIST-size(); ++l)
 			{
-				temp[k][l] = RELATION_LIST[1][i][j];
+				temp[k + i][l + j] = RELATION_LIST[1][i][j];
 			}
 		}
 	}
 }
 
-vector< vector<string> > temp;
 for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 {
 	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
@@ -183,7 +182,7 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 		{
 			for (unsigned int l = 0; l <RELATION_LIST-size(); ++l)
 			{
-				temp[k + 2][l + 2] = RELATION_LIST[2][k][l];
+				temp[k + 2 + i][l + 2 + j] = RELATION_LIST[2][k][l];
 			}
 		}
 	}
