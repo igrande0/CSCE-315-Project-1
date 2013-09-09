@@ -40,7 +40,20 @@ void Database::select(string view_name, string in_table_name, int row_index){
 }
 
 void Database::project(string view_name, string in_table_name, vector<string> attributes){
-
+	int RELATION_INDEX = get_relation_index(in_table_name);
+	vector<vector<string>> TEMP_VIEW_TABLE;
+	vector<int> columns;
+	for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX][1].size(); i++)
+		for(unsigned int j=0; j<attributes.size(); j++)
+			if(attributes[j] == RELATION_LIST[RELATION_INDEX][1][i])
+				columns.push_back(i);
+	for(unsigned int i=0; i< RELATION_LIST[RELATION_INDEX].size(); i++){
+		vector<string> temp_vec;
+		for(unsigned int j=0; j<columns.size(); j++)
+			temp_vec.push_back(RELATION_LIST[RELATION_INDEX][i][j]);
+		TEMP_VIEW_TABLE.push_back(temp_vec);
+	}
+	VIEW_LIST.push_back(TEMP_VIEW_TABLE);
 }
 
 /* rename all attributes in an existing table (can be a relation or view)
