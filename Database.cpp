@@ -9,46 +9,34 @@
 /* QUERY FUNCTIONS */
 /*------------------------------------------------------------------------------------*/
 
-void Database::select(string view_name, string in_table_name, string left_arg, string right_arg, string comparison){
+void Database::select(string view_name, string in_table_name, int row_index){
 	bool VIEW_CHECK = true;
-	unsigned int VIEW_INDEX = -1;
 	for(unsigned int i=0; i<VIEW_LIST.size(); i++)
 		if(VIEW_LIST[i][0][0] == view_name){
 			VIEW_CHECK = false;
-			VIEW_INDEX = i;
 		}
 
-	int RELATION_INDEX, RELATION_COLUMN = -1;
 	vector<vector<string>> TEMP_VIEW_TABLE;
-
-	for(unsigned int i =0; i<RELATION_LIST.size(); i++)
-		if(RELATION_LIST[i][0][0] == in_table_name)
-			RELATION_INDEX = i;
-	for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX][1].size(); i++)
-		if(RELATION_LIST[RELATION_INDEX][1][i] == left_arg)
-			RELATION_COLUMN = i;
-	
-	
 	
 	if(VIEW_CHECK){
+		int RELATION_INDEX = get_relation_index(in_table_name);
 		vector<string> temp_vec;
 		temp_vec.push_back(view_name);
-		TEMP_VIEW_TABLE.push_back(temp_vec);					//inserts view table name into temp vector
-		//need to initialize view table headings
-		//TEMP_VIEW_TABLE.push_back(table name);
-		//push_back attributes and types
-		for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX].size(); i++)
-			if(compare(RELATION_LIST[RELATION_INDEX][2][RELATION_COLUMN], RELATION_LIST[RELATION_INDEX][i][RELATION_COLUMN], right_arg, comparison))
-				TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][i]);
+		for(unsigned int i=1; i<RELATION_LIST[RELATION_INDEX][0].size(); i++)
+			temp_vec.push_back(RELATION_LIST[RELATION_INDEX][0][i]);
+
+		TEMP_VIEW_TABLE.push_back(temp_vec);
+		TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][1]);
+		TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][2]);
+		TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][row_index]);
 
 		VIEW_LIST.push_back(TEMP_VIEW_TABLE);
 	}
 	else{
-		for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX].size(); i++)
-			if(compare(RELATION_LIST[RELATION_INDEX][2][RELATION_COLUMN], RELATION_LIST[RELATION_INDEX][i][RELATION_COLUMN], right_arg, comparison))
-				VIEW_LIST[VIEW_INDEX].push_back(RELATION_LIST[RELATION_INDEX][i]);
+		int VIEW_INDEX = get_view_index(view_name);
+		int RELATION_INDEX = get_relation_index(in_table_name);
+		VIEW_LIST[VIEW_INDEX].push_back(RELATION_LIST[RELATION_INDEX][row_index]);
 	}
-	
 }
 
 void Database::project(string view_name, string in_table_name, vector<string> attributes){
@@ -152,51 +140,7 @@ void Database::create(string table_name, vector<string> attributes, vector<strin
 }
 
 void Database::update(string relation_name, string left_arg, string right_arg, string condition, vector<string> attributes){       //need to rethink arguments - JM
-	/*int VECTOR_INDEX, COLUMN_INDEX;
-	vector<int> ROW_INDECIES;
-	for(unsigned int i=0; i<RELATION_LIST.size(); i++)
-		if(relation_name == RELATION_LIST[i][0][0])
-			VECTOR_INDEX=i;
 
-	for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX][1].size(); i++)
-		if(left_arg == RELATION_LIST[VECTOR_INDEX][1][i])
-			COLUMN_INDEX=i;
-	
-	switch (condition){
-		case "==":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);	
-			break;
-        	case "!=":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg != RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);
-            		break;
-        	case "<":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg < RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);
-            		break;
-		case ">":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg > RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);
-            		break;
-		case "<=":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg <= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);
-            		break;
-		case ">=":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg >= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);
-            		break;
-      }
-      for(unsigned int i=0; i< ROW_INDICIES.size(); i++){
-      	      RELATION_LIST[VECTOR_INDEX][ROW_INDICIES[i]][COLUMN_INDEX] == attributes[0];	
-      }*/
 }
 
 void Database::insert_tuple(string relation_name, vector<string> tuple){
