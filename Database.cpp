@@ -105,22 +105,21 @@ void Database::rename(string new_view, string existing_table, vector<string> att
 }
 
 void Database::set_union(string view_name, string relation1_name, string relation2_name){
-vector< vector<string> > temp;
-int relation1 = get_relation_index(relation1_name);
-int relation2 = get_relation_index(relation2_name);
+	vector< vector<string> > temp;
+	int relation1 = get_relation_index(relation1_name);
+	int relation2 = get_relation_index(relation2_name);
 
-temp = RELATION_LIST[relation1];
+	temp = RELATION_LIST[relation1];
 
-for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
-{
-	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
+	for (unsigned int i = 0; i < RELATION_LIST[relation1].size(); ++i)
 	{
-		if (RELATION_LIST[relation2][i][j] != RELATION_LIST[relation1][i][j])
-		temp[RELATION_LIST.size() + i][RELATION_LIST.size() + j] = (RELATION_LIST[relation2][i][j]);
+		for (unsigned int j = 0; j < RELATION_LIST[relation2].size(); ++j)
+		{
+			if (RELATION_LIST[relation2][i] != RELATION_LIST[relation1][j])
+				temp[RELATION_LIST.size() + i][RELATION_LIST.size() + j] = (RELATION_LIST[relation2][i][j]);
+		}
 	}
-	
-}
-temp[0][0] = view_name;
+	temp[0][0] = view_name;
 }
 
 void Database::set_difference(string view_name, string relation1_name, string relation2_name){
