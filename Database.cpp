@@ -147,6 +147,7 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 		}
 	}
 }
+temp[0][0] = view_name;
 
 }
 
@@ -181,6 +182,7 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 	}
 }
 
+temp[0][0] = view_name;
 }
 
 /*------------------------------------------------------------------------------------*/
