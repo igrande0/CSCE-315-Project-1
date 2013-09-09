@@ -108,18 +108,21 @@ void Database::set_union(string view_name, string relation1_name, string relatio
 	vector< vector<string> > temp;
 	int relation1 = get_relation_index(relation1_name);
 	int relation2 = get_relation_index(relation2_name);
+	vector<string> temp_vec;
+	temp_vec.push_back(view_name);
+	for(unsigned int i=1; i<RELATION_LIST[relation2][0].size(); i++)
+		temp_vec.push_back(RELATION_LIST[relation2][0][i]);
+	temp.push_back(temp_vec);
 
-	temp = RELATION_LIST[relation1];
-
-	for (unsigned int i = 0; i < RELATION_LIST[relation1].size(); ++i)
+	for(unsigned int i=0; i<RELATION_LIST[relation1].size(); i++)
 	{
-		for (unsigned int j = 0; j < RELATION_LIST[relation2].size(); ++j)
+		for(unsigned int j=0; j<RELATION_LIST[relation2].size(); ++j)
 		{
-			if (RELATION_LIST[relation2][i] != RELATION_LIST[relation1][j])
-				temp[RELATION_LIST.size() + i][RELATION_LIST.size() + j] = (RELATION_LIST[relation2][i][j]);
+			if (RELATION_LIST[relation2][i] == RELATION_LIST[relation1][j])
+				temp.push_back(RELATION_LIST[relation2][i]);
 		}
 	}
-	temp[0][0] = view_name;
+	VIEW_LIST.push_back(temp);
 }
 
 void Database::set_difference(string view_name, string relation1_name, string relation2_name){
