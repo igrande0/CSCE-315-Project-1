@@ -46,10 +46,10 @@ public:
 	void write(string table_name);
 	void show(string table_name);
 	void create(string table_name, vector<string> attributes, vector<string> keys);
-	void update(string relation_name, string left_arg, string right_arg, string condition, vector<string> attributes);
+	void update(string relation_name, vector<string> attribute, vector<string> data, int row_index);
 	void insert_tuple(string relation_name, vector<string> tuple);
 	void insert_view(string relation_name, string view_name);
-	void remove(string table_name, string attribute_name, string right_arg, string comparison_op);
+	void remove(string table_name, int row_index);
 
 	//utility functions
 	int get_relation_index(string table_name);

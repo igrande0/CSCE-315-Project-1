@@ -58,54 +58,40 @@ void Database::project(string view_name, string in_table_name, vector<string> at
 /* rename all attributes in an existing table (can be a relation or view)
  * add resulting table into the view list
  */
-void Database::rename(string out_view_name, string in_table_name, vector<string> attributes){
-	int in_table_type;
-	int in_table_index = -1;
-	int out_view_index;
+void Database::rename(string new_view, string existing_table, vector<string> attributes){
+	int existing_table_type;
+	int existing_table_index;
+	int new_view_index;
 
 	// look for table in relation list
-	for(unsigned int i = 0; i < RELATION_LIST.size(); ++i) 
-		if(in_table_name == RELATION_LIST[i][0][0]) {
-			in_table_index = i;
-			in_table_type = RELATION;
-			break;
-		}
-	
-	// if table isn't found, look in view list
-	if(in_table_index == -1)
-		for(unsigned int i = 0; i < VIEW_LIST.size(); ++i) 
-			if(in_table_name == VIEW_LIST[i][0][0]) {
-				in_table_index = i;
-				in_table_type = VIEW;
-				break;
-			}
-
-	//*********BEGIN MISSING ERROR HANDLING***********
-	// ERROR - no such table 
-	if(in_table_index == -1);
+	if((existing_table_index = get_relation_index(existing_table)) != -1)
+		existing_table_type = RELATION;
+	else if((existing_table_index = get_view_index(existing_table)) != -1)
+		existing_table_type = VIEW;
+	else
+		; // RETURN AN ERROR
 		
 	// ERROR - incorrect number of attributes 
-	if(in_table_type == RELATION && RELATION_LIST[in_table_index][1].size() != attributes.size());
-	if(in_table_type == VIEW && VIEW_LIST[in_table_index][1].size() != attributes.size());
-	//*********END MISSING ERROR HANDLING***********
+	if(existing_table_type == RELATION && RELATION_LIST[existing_table_index][1].size() != attributes.size());
+	if(existing_table_type == VIEW && VIEW_LIST[existing_table_index][1].size() != attributes.size());
 		
 	// create new view table with 2 rows (title and attribute rows)
 	VIEW_LIST.push_back(vector<vector<string> >(2));
-	out_view_index = VIEW_LIST.size() - 1;
+	new_view_index = VIEW_LIST.size() - 1;
 
 	// set title
-	VIEW_LIST[out_view_index][0].push_back(out_view_name);
+	VIEW_LIST[new_view_index][0].push_back(new_view);
 	
 	// set attributes
-	VIEW_LIST[out_view_index][1] = attributes;
+	VIEW_LIST[new_view_index][1] = attributes;
 
 	// copy remaining data
-	if(in_table_type == RELATION)
-		for(unsigned int i = 2; i < RELATION_LIST[in_table_index].size(); ++i)
-			VIEW_LIST[out_view_index].push_back(RELATION_LIST[in_table_index][i]);
+	if(existing_table_type == RELATION)
+		for(unsigned int i = 2; i < RELATION_LIST[existing_table_index].size(); ++i)
+			VIEW_LIST[new_view_index].push_back(RELATION_LIST[existing_table_index][i]);
 	else
-		for(unsigned int i = 2; i < VIEW_LIST[in_table_index].size(); ++i)
-			VIEW_LIST[out_view_index].push_back(VIEW_LIST[in_table_index][i]);
+		for(unsigned int i = 2; i < VIEW_LIST[existing_table_index].size(); ++i)
+			VIEW_LIST[new_view_index].push_back(VIEW_LIST[existing_table_index][i]);
 }
 
 void Database::set_union(string view_name, string relation1_name, string relation2_name){
@@ -151,70 +137,37 @@ void Database::create(string table_name, vector<string> attributes, vector<strin
 	RELATION_TABLE.push_back(TEMP_TABLE);*/
 }
 
-void Database::update(string relation_name, string left_arg, string right_arg, string condition, vector<string> attributes){       //need to rethink arguments - JM
-	/*int VECTOR_INDEX, COLUMN_INDEX;
-	vector<int> ROW_INDECIES;
-	for(unsigned int i=0; i<RELATION_LIST.size(); i++)
-		if(relation_name == RELATION_LIST[i][0][0])
-			VECTOR_INDEX=i;
+void Database::update(string relation_name, vector<string>attribute, vector<string> data, int row_index){
+	int relation_index = -1;
+	vector<int> attribute_indices;
 
-	for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX][1].size(); i++)
-		if(left_arg == RELATION_LIST[VECTOR_INDEX][1][i])
-			COLUMN_INDEX=i;
-	
-	switch (condition){
-		case "==":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg == RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);	
-			break;
-        	case "!=":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg != RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);
-            		break;
-        	case "<":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg < RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);
-            		break;
-		case ">":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg > RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);
-            		break;
-		case "<=":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg <= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);
-            		break;
-		case ">=":
-			for(unsigned int i=0; i<RELATION_LIST[VECTOR_INDEX].size(); i++)
-				if(right_arg >= RELATION_LIST[VECTOR_INDEX][i][COLUMN_INDEX])
-					ROW_INDICIES.push_back(i);
-            		break;
-      }
-      for(unsigned int i=0; i< ROW_INDICIES.size(); i++){
-      	      RELATION_LIST[VECTOR_INDEX][ROW_INDICIES[i]][COLUMN_INDEX] == attributes[0];	
-      }*/
+	relation_index = get_relation_index(relation_name);
+
+	// ERROR - no such relation
+	if(relation_index == -1);
+
+	// find attribute indices
+	for(unsigned int i = 0; i < attribute.size(); ++i) {
+		int attribute_index = -1;
+		attribute_index = get_attribute_index(RELATION, relation_index, attribute[i]);
+
+		// ERROR - no such attribute
+		if(relation_index == -1);
+
+		attribute_indices.push_back(attribute_index);
+	}
+
+	// update attributes
+	for(unsigned int i = 0; i < attribute_indices.size(); ++i)
+		RELATION_LIST[relation_index][row_index][attribute_indices[i]] = data[i];
 }
 
 void Database::insert_tuple(string relation_name, vector<string> tuple){
-	int table_index = -1;
+	int table_index;
 
-	// find location of relation table
-	for(unsigned int i = 0; i < RELATION_LIST.size(); i++)
-		if(relation_name == RELATION_LIST[i][0][0]) {
-			table_index = i;
-			break;
-		}
+	if((table_index = get_relation_index(relation_name)) == -1)
+		; // RETURN ERROR
 
-	//*********BEGIN MISSING ERROR HANDLING***********
-	// ERROR - no such table 
-	if(table_index == -1);
-	//*********END MISSING ERROR HANDLING***********
-
-	// add new tuple to the end of the table
 	RELATION_LIST[table_index].push_back(tuple);
 }
 
@@ -222,56 +175,25 @@ void Database::insert_view(string relation_name, string view_name){
 	int view_index = -1;
 	int relation_index = -1;
 
-	// find location of view table
-	for(unsigned int i = 0; i < VIEW_LIST.size(); i++)
-		if(view_name == VIEW_LIST[i][0][0]) {
-			view_index = i;
-			break;
-		}
+	if((view_index = get_view_index(view_name)) == -1)
+		; // RETURN ERROR
 
-	// find location of relation table
-	for(unsigned int i = 0; i < RELATION_LIST.size(); i++)
-		if(relation_name == RELATION_LIST[i][0][0]) {
-			relation_index = i;
-			break;
-		}
-
-	//*********BEGIN MISSING ERROR HANDLING***********
-	// ERROR - no such table 
-	if(view_index == -1);
-	if(relation_index == -1);
-	//*********END MISSING ERROR HANDLING***********
+	if((relation_index = get_relation_index(relation_name)) == -1)
+		; // RETURN ERROR
 
 	// copy values from view table to relation table
-	for(unsigned int i = 2; i < VIEW_LIST[relation_index].size(); ++i)
+	for(unsigned int i = 3; i < VIEW_LIST[relation_index].size(); ++i)
 		RELATION_LIST[i].push_back(VIEW_LIST[relation_index][i]);
 }
 
-void Database::remove(string relation_name, string attribute_name, string right_arg, string comparison_op){
+void Database::remove(string relation_name, int row_index){
 	int relation_index = -1;
-	int column_index = -1;
-	string attribute_type;
+	relation_index = get_relation_index(relation_name);
 
-	for(unsigned int i = 0; i < RELATION_LIST.size(); i++)
-		if(relation_name == RELATION_LIST[i][0][0])
-			relation_index=i;
-
-	for(unsigned int i = 0; i < RELATION_LIST[relation_index][1].size(); i++)
-		if(attribute_name == RELATION_LIST[relation_index][1][i])
-			column_index = i;
-
-	//*********BEGIN MISSING ERROR HANDLING***********
-	// ERROR - no such table 
+	// ERROR - no such relation
 	if(relation_index == -1);
-	// ERROR - no such attribute
-	if(column_index == -1);
-	//*********END MISSING ERROR HANDLING***********
 
-	attribute_type = RELATION_LIST[relation_index][2][column_index];
-	
-	for(unsigned int i=0; i<RELATION_LIST[relation_index].size(); i++)
-		if(compare(attribute_type, RELATION_LIST[relation_index][i][column_index], right_arg, comparison_op))
-			RELATION_LIST[relation_index].erase(RELATION_LIST[relation_index].begin()+i);	
+	RELATION_LIST[relation_index].erase(RELATION_LIST[relation_index].begin() + row_index);
 }
 
 bool Database::compare(string attribute_type, string left_arg, string right_arg, string comparison_op) {
