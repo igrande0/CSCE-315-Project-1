@@ -109,15 +109,62 @@ void Database::rename(string out_view_name, string in_table_name, vector<string>
 }
 
 void Database::set_union(string view_name, string relation1_name, string relation2_name){
+vector< vector<string> > temp;
+bool equal = false;
+for (int i = 0; i < RELATION_LIST.size(); ++i)
+{
+	for (int j = 0; j < RELATION_LIST.size(); ++j)
+	{
+		temp[i][j] = RELATION_LIST[1][i][j];
+	}
+}
 
+for (int i = 0; i < RELATION_LIST.size(); ++i)
+{
+	for (int j = 0; j < RELATION_LIST.size(); ++j)
+	{
+		if (RELATION_LIST[2][i][j] != RELATION_LIST[1][i][j])
+			equal = true;
+	}
+	if (equal == true)
+	temp.push_back (RELATION_LIST[2][i][j]);
+}
+
+return temp;
 }
 
 void Database::set_difference(string view_name, string relation1_name, string relation2_name){
+vector< vector<string> > temp;
+bool equal = false;
+
+for (int i = 0; i < RELATION_LIST.size(); ++i)
+{
+	for (int j = 0; j < RELATION_LIST.size(); ++j)
+	{
+		for (int k = 0; k < RELATION_LIST.size(); ++k)
+		{
+			for (int l = 0; l < RELATION_LIST.size(); ++l)
+			{
+				if (RELATION_LIST[1][i][j] == RELATION_LIST[2][k][l])
+				equal = true;
+			}
+			if (equal == false)
+			temp.push_back (RELATION_LIST[1][i][j]);
+		}
+	}
+}
 
 }
 
 void Database::cross_product(string view_name, string relation1_name, string relation2_name){
-
+vector< vector<string> > temp;
+for (int i = 0; i < RELATION_LIST.size(); ++i)
+{
+	for (int j = 0; j < RELATION_LIST.size(); ++j)
+	{
+	
+	}
+}
 }
 
 /*------------------------------------------------------------------------------------*/
