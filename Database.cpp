@@ -98,29 +98,27 @@ void Database::rename(string new_view, string existing_table, vector<string> att
 
 void Database::set_union(string view_name, string relation1_name, string relation2_name){
 vector< vector<string> > temp;
-bool equal = false;
-for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
-{
-	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
-	{
-		temp[i][j] = RELATION_LIST[1][i][j];
-	}
-}
+int relation1 = get_relation_index(relation1_name);
+int relation2 = get_relation_index(relation2_name);
+
+temp = RELATION_LIST[relation1];
 
 for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 {
 	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
 	{
-		if (RELATION_LIST[2][i][j] != RELATION_LIST[1][i][j])
-			equal = true;
+		if (RELATION_LIST[relation2][i][j] != RELATION_LIST[relation1][i][j])
+		temp[RELATION_LIST.size() + i][RELATION_LIST.size() + j] = (RELATION_LIST[relation2][i][j]);
 	}
-	//if (equal == true)
-	//temp.push_back (RELATION_LIST[2][i][j]);
+	
 }
+temp[0][0] = view_name;
 }
 
 void Database::set_difference(string view_name, string relation1_name, string relation2_name){
 vector< vector<string> > temp;
+int relation1 = get_relation_index(relation1_name);
+int relation2 = get_relation_index(relation2_name);
 bool equal = false;
 
 for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
@@ -131,11 +129,11 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 		{
 			for (unsigned int l = 0; l < RELATION_LIST.size(); ++l)
 			{
-				if (RELATION_LIST[1][i][j] == RELATION_LIST[2][k][l])
+				if (RELATION_LIST[relation1][i][j] == RELATION_LIST[relation2][k][l])
 				equal = true;
 			}
-			//if (equal == false)
-			//temp.push_back (RELATION_LIST[1][i][j]);
+			if (equal == false)
+			temp[i][j] = (RELATION_LIST[relation1][i][j]);
 		}
 	}
 }
@@ -146,6 +144,8 @@ temp[0][0] = view_name;
 void Database::cross_product(string view_name, string relation1_name, string relation2_name){
 
 vector< vector<string> > temp;
+int relation1 = get_relation_index(relation1_name);
+int relation2 = get_relation_index(relation2_name);
 for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 {
 	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
@@ -154,7 +154,7 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 		{
 			for (unsigned int l = 0; l <RELATION_LIST.size(); ++l)
 			{
-				temp[k + i][l + j] = RELATION_LIST[1][i][j];
+				temp[k + i][l + j] = RELATION_LIST[relation1][i][j];
 			}
 		}
 	}
@@ -168,13 +168,13 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 		{
 			for (unsigned int l = 0; l <RELATION_LIST.size(); ++l)
 			{
-				temp[k + 2 + i][l + 2 + j] = RELATION_LIST[2][k][l];
+				temp[k + 2 + i][l + 2 + j] = RELATION_LIST[relation2][k][l];
 			}
 		}
 	}
 }
-
 temp[0][0] = view_name;
+
 }
 
 /*------------------------------------------------------------------------------------*/
