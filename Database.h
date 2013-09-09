@@ -29,7 +29,6 @@ private:
 	vector<vector<vector<string> > > RELATION_LIST;
 	vector<vector<vector<string> > > VIEW_LIST;
 
-	bool compare(string attribute_type, string left_arg, string right_arg, string comparison_op);
 	template <class T> bool compare(T left_arg, T right_arg, string comparison_op);
 	int extract_digits(string input);
 
@@ -51,6 +50,12 @@ public:
 	void insert_tuple(string relation_name, vector<string> tuple);
 	void insert_view(string relation_name, string view_name);
 	void remove(string table_name, string attribute_name, string right_arg, string comparison_op);
+
+	//utility functions
+	int get_relation_index(string table_name);
+	int get_attribute_index(int table_type, int table_index, string attribute_name);
+	int get_view_index(string table_name);
+	bool compare(string attribute_type, string left_arg, string right_arg, string comparison_op);
 };
 
 #endif

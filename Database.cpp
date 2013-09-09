@@ -10,51 +10,45 @@
 /*------------------------------------------------------------------------------------*/
 
 void Database::select(string view_name, string in_table_name, string left_arg, string right_arg, string comparison){
-	int VIEW_INDEX, VIEW_COLUMN = -1;
+	bool VIEW_CHECK = true;
+	unsigned int VIEW_INDEX = -1;
+	for(unsigned int i=0; i<VIEW_LIST.size(); i++)
+		if(VIEW_LIST[i][0][0] == view_name){
+			VIEW_CHECK = false;
+			VIEW_INDEX = i;
+		}
+
+	int RELATION_INDEX, RELATION_COLUMN = -1;
 	vector<vector<string>> TEMP_VIEW_TABLE;
 
-	for(unsigned int i =0; i<VIEW_LIST.size(); i++)
-		if(VIEW_LIST[i][0][0] == view_name)
-			VIEW_INDEX = i;
-	for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX][1].size(); i++)
-		if(VIEW_LIST[VIEW_INDEX][1][i] == left_arg)
-			VIEW_COLUMN = i;
+	for(unsigned int i =0; i<RELATION_LIST.size(); i++)
+		if(RELATION_LIST[i][0][0] == in_table_name)
+			RELATION_INDEX = i;
+	for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX][1].size(); i++)
+		if(RELATION_LIST[RELATION_INDEX][1][i] == left_arg)
+			RELATION_COLUMN = i;
+	
+	
+	
+	if(VIEW_CHECK){
+		vector<string> temp_vec;
+		temp_vec.push_back(view_name);
+		TEMP_VIEW_TABLE.push_back(temp_vec);					//inserts view table name into temp vector
+		//need to initialize view table headings
+		//TEMP_VIEW_TABLE.push_back(table name);
+		//push_back attributes and types
+		for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX].size(); i++)
+			if(compare(RELATION_LIST[RELATION_INDEX][2][RELATION_COLUMN], RELATION_LIST[RELATION_INDEX][i][RELATION_COLUMN], right_arg, comparison))
+				TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][i]);
 
-	//need to initialize view table headings
-	//TEMP_VIEW_TABLE.push_back(table name);
-	//push_back attributes and types
-	switch (comparison){
-		case "==":
-			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
-				if(right_arg == VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
-					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);	
-			break;
-        case "!=":
-			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
-				if(right_arg != VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
-					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);
-            		break;
-        case "<":
-			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
-				if(right_arg < VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
-					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);
-        break;
-		case ">":
-			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
-				if(right_arg > VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
-					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);
-        break;
-		case "<=":
-			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
-				if(right_arg <= VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
-					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);
-        break;
-		case ">=":
-			for(unsigned int i=0; i<VIEW_LIST[VIEW_INDEX].size(); i++)
-				if(right_arg >= VIEW_LIST[VIEW_INDEX][i][COLUMN_INDEX])
-					TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][i]);
-        break;
-      }
+		VIEW_LIST.push_back(TEMP_VIEW_TABLE);
+	}
+	else{
+		for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX].size(); i++)
+			if(compare(RELATION_LIST[RELATION_INDEX][2][RELATION_COLUMN], RELATION_LIST[RELATION_INDEX][i][RELATION_COLUMN], right_arg, comparison))
+				VIEW_LIST[VIEW_INDEX].push_back(RELATION_LIST[RELATION_INDEX][i]);
+	}
+	
 }
 
 void Database::project(string view_name, string in_table_name, vector<string> attributes){
@@ -323,4 +317,37 @@ int Database::extract_digits(string input) {
 			input.erase(input.begin() + i);
 
 	return stoi(input);
+}
+
+int Database::get_relation_index(string table_name){
+	int INDEX = -1;
+
+	for(unsigned int i=0; i<RELATION_LIST.size(); i++)
+		if(RELATION_LIST[i][0][0] == table_name)
+			INDEX = i;
+	return INDEX;
+}
+
+int Database::get_view_index(string table_name){
+	int INDEX = -1;
+
+	for(unsigned int i=0; i<VIEW_LIST.size(); i++)
+		if(VIEW_LIST[i][0][0] == table_name)
+			INDEX = i;
+	return INDEX;
+}
+
+int Database::get_attribute_index(int table_type, int table_index, string attribute_name){
+	int COLUMN_INDEX = -1;
+	if(table_type == RELATION){
+		for(unsigned int i = 0; i<RELATION_LIST[table_index][1].size(); i++)
+			if(attribute_name == RELATION_LIST[table_index][1][i])
+				COLUMN_INDEX = i;
+	}
+	else{
+		for(unsigned int i = 0; i<VIEW_LIST[table_index][1].size(); i++)
+			if(attribute_name == VIEW_LIST[table_index][1][i])
+				COLUMN_INDEX = i;
+	}
+	return COLUMN_INDEX;
 }
