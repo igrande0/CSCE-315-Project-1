@@ -49,7 +49,7 @@ public:
 	void update(string relation_name, vector<string> attribute, vector<string> data, int row_index);
 	void insert_tuple(string relation_name, vector<string> tuple);
 	void insert_view(string relation_name, string view_name);
-	void remove(string table_name, int row_index);
+	void remove(string table_name, int row_index);					
 
 	//utility functions
 	int get_relation_index(string table_name);

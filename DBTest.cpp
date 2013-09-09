@@ -51,6 +51,20 @@ int main() {
 	db.insert_tuple(title, tuple2);
 	db.insert_tuple(title, tuple3);
 	db.insert_tuple(title, tuple4);
-	
 	db.show(title);
+	db.remove(title, 4);
+	db.show(title);
+	vector<string> temp_at;
+	temp_at.push_back("Attribute 2");
+	vector<string> temp_new;
+	temp_new.push_back("55");
+	db.update(title, temp_at, temp_new, 3);
+	db.show(title);
+	db.select("view1", title, 3);
+	db.select("view1", title, 5);
+	//db.show("view1");              //dumps core? couldnt figure out gbd - JM
+	
+
+
+
 }
