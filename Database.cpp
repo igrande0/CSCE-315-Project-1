@@ -196,15 +196,15 @@ void Database::show(string table_name){
 	}
 	if(TABLE_TYPE == RELATION){
 		cout<<RELATION_LIST[INDEX][0][0]<<" (";
-		for(unsigned int i=1; i<RELATION_LIST[INDEX].size(); i++)
-			cout<<RELATION_LIST[INDEX][0][i]<<" ";
+		for(unsigned int i=1; i<RELATION_LIST[INDEX][0].size(); i++)
+			cout<<RELATION_LIST[INDEX][0][i]<<",";
 		cout<<")"<<endl;
-		for(unsigned int i=0; i<RELATION_LIST[INDEX].size(); i++)
+		for(unsigned int i=1; i<RELATION_LIST[INDEX].size(); i++) {
 			for(unsigned int j=0; j<RELATION_LIST[INDEX][i].size(); j++){
 				cout<<RELATION_LIST[INDEX][i][j]<<"\t";
-				cout<<endl;
 			}
-		cout<<endl;
+			cout<<endl;
+		}
 	}
 	else{
 		cout<<VIEW_LIST[INDEX][0][0]<<" (";
@@ -237,6 +237,8 @@ void Database::create(string table_name, vector<string> attributes, vector<strin
 	TEMP_RELATION_TABLE.push_back(temp_vec1);
 	TEMP_RELATION_TABLE.push_back(temp_vec2);
 	TEMP_RELATION_TABLE.push_back(temp_vec3);
+
+	RELATION_LIST.push_back(TEMP_RELATION_TABLE);
 }
 
 
@@ -263,10 +265,6 @@ void Database::update(string relation_name, vector<string>attribute, vector<stri
 	// update attributes
 	for(unsigned int i = 0; i < attribute_indices.size(); ++i)
 		RELATION_LIST[relation_index][row_index][attribute_indices[i]] = data[i];
-
-
-
-
 }
 
 void Database::insert_tuple(string relation_name, vector<string> tuple){
