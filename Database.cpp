@@ -112,17 +112,17 @@ void Database::rename(string out_view_name, string in_table_name, vector<string>
 void Database::set_union(string view_name, string relation1_name, string relation2_name){
 vector< vector<string> > temp;
 bool equal = false;
-for (int i = 0; i < RELATION_LIST.size(); ++i)
+for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 {
-	for (int j = 0; j < RELATION_LIST.size(); ++j)
+	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
 	{
 		temp[i][j] = RELATION_LIST[1][i][j];
 	}
 }
 
-for (int i = 0; i < RELATION_LIST.size(); ++i)
+for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 {
-	for (int j = 0; j < RELATION_LIST.size(); ++j)
+	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
 	{
 		if (RELATION_LIST[2][i][j] != RELATION_LIST[1][i][j])
 			equal = true;
@@ -138,13 +138,13 @@ void Database::set_difference(string view_name, string relation1_name, string re
 vector< vector<string> > temp;
 bool equal = false;
 
-for (int i = 0; i < RELATION_LIST.size(); ++i)
+for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 {
-	for (int j = 0; j < RELATION_LIST.size(); ++j)
+	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
 	{
-		for (int k = 0; k < RELATION_LIST.size(); ++k)
+		for (unsigned int k = 0; k < RELATION_LIST.size(); ++k)
 		{
-			for (int l = 0; l < RELATION_LIST.size(); ++l)
+			for (unsigned int l = 0; l < RELATION_LIST.size(); ++l)
 			{
 				if (RELATION_LIST[1][i][j] == RELATION_LIST[2][k][l])
 				equal = true;
@@ -158,14 +158,37 @@ for (int i = 0; i < RELATION_LIST.size(); ++i)
 }
 
 void Database::cross_product(string view_name, string relation1_name, string relation2_name){
+
 vector< vector<string> > temp;
-for (int i = 0; i < RELATION_LIST.size(); ++i)
+for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 {
-	for (int j = 0; j < RELATION_LIST.size(); ++j)
+	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
 	{
-	
+		for (unsigned int k = 0; k < RELATION_LIST.size(); ++k)
+		{
+			for (unsigned int l = 0; l <RELATION_LIST-size(); ++l)
+			{
+				temp[k][l] = RELATION_LIST[1][i][j];
+			}
+		}
 	}
 }
+
+vector< vector<string> > temp;
+for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
+{
+	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
+	{
+		for (unsigned int k = 0; k < RELATION_LIST.size(); ++k)
+		{
+			for (unsigned int l = 0; l <RELATION_LIST-size(); ++l)
+			{
+				temp[k + 2][l + 2] = RELATION_LIST[2][k][l];
+			}
+		}
+	}
+}
+
 }
 
 /*------------------------------------------------------------------------------------*/
