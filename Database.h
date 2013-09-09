@@ -34,7 +34,7 @@ private:
 
 public:
 	// Query Functions
-	void select(string view_name, string in_table_name, string left_arg, string right_arg, string comparison);
+	void select(string view_name, string in_table_name, int row_index);
 	void project(string view_name, string in_table_name, vector<string> attributes);
 	void rename(string out_view_name, string in_table_name, vector<string> attributes);
 	void set_union(string view_name, string table1_name, string table2_name);

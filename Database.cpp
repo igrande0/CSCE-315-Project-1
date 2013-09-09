@@ -1,6 +1,7 @@
 #include "Database.h"
 
 #include <cctype>
+#include <iostream>
 
 #define RELATION 0
 #define VIEW 1
@@ -9,50 +10,51 @@
 /* QUERY FUNCTIONS */
 /*------------------------------------------------------------------------------------*/
 
-void Database::select(string view_name, string in_table_name, string left_arg, string right_arg, string comparison){
+void Database::select(string view_name, string in_table_name, int row_index){
 	bool VIEW_CHECK = true;
-	unsigned int VIEW_INDEX = -1;
 	for(unsigned int i=0; i<VIEW_LIST.size(); i++)
 		if(VIEW_LIST[i][0][0] == view_name){
 			VIEW_CHECK = false;
-			VIEW_INDEX = i;
 		}
 
-	int RELATION_INDEX, RELATION_COLUMN = -1;
 	vector<vector<string>> TEMP_VIEW_TABLE;
-
-	for(unsigned int i =0; i<RELATION_LIST.size(); i++)
-		if(RELATION_LIST[i][0][0] == in_table_name)
-			RELATION_INDEX = i;
-	for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX][1].size(); i++)
-		if(RELATION_LIST[RELATION_INDEX][1][i] == left_arg)
-			RELATION_COLUMN = i;
-	
-	
 	
 	if(VIEW_CHECK){
+		int RELATION_INDEX = get_relation_index(in_table_name);
 		vector<string> temp_vec;
 		temp_vec.push_back(view_name);
-		TEMP_VIEW_TABLE.push_back(temp_vec);					//inserts view table name into temp vector
-		//need to initialize view table headings
-		//TEMP_VIEW_TABLE.push_back(table name);
-		//push_back attributes and types
-		for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX].size(); i++)
-			if(compare(RELATION_LIST[RELATION_INDEX][2][RELATION_COLUMN], RELATION_LIST[RELATION_INDEX][i][RELATION_COLUMN], right_arg, comparison))
-				TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][i]);
+		for(unsigned int i=1; i<RELATION_LIST[RELATION_INDEX][0].size(); i++)
+			temp_vec.push_back(RELATION_LIST[RELATION_INDEX][0][i]);
+
+		TEMP_VIEW_TABLE.push_back(temp_vec);
+		TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][1]);
+		TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][2]);
+		TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][row_index]);
 
 		VIEW_LIST.push_back(TEMP_VIEW_TABLE);
 	}
 	else{
-		for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX].size(); i++)
-			if(compare(RELATION_LIST[RELATION_INDEX][2][RELATION_COLUMN], RELATION_LIST[RELATION_INDEX][i][RELATION_COLUMN], right_arg, comparison))
-				VIEW_LIST[VIEW_INDEX].push_back(RELATION_LIST[RELATION_INDEX][i]);
+		int VIEW_INDEX = get_view_index(view_name);
+		int RELATION_INDEX = get_relation_index(in_table_name);
+		VIEW_LIST[VIEW_INDEX].push_back(RELATION_LIST[RELATION_INDEX][row_index]);
 	}
-	
 }
 
 void Database::project(string view_name, string in_table_name, vector<string> attributes){
-
+	int RELATION_INDEX = get_relation_index(in_table_name);
+	vector<vector<string>> TEMP_VIEW_TABLE;
+	vector<int> columns;
+	for(unsigned int i=0; i<RELATION_LIST[RELATION_INDEX][1].size(); i++)
+		for(unsigned int j=0; j<attributes.size(); j++)
+			if(attributes[j] == RELATION_LIST[RELATION_INDEX][1][i])
+				columns.push_back(i);
+	for(unsigned int i=0; i< RELATION_LIST[RELATION_INDEX].size(); i++){
+		vector<string> temp_vec;
+		for(unsigned int j=0; j<columns.size(); j++)
+			temp_vec.push_back(RELATION_LIST[RELATION_INDEX][i][j]);
+		TEMP_VIEW_TABLE.push_back(temp_vec);
+	}
+	VIEW_LIST.push_back(TEMP_VIEW_TABLE);
 }
 
 /* rename all attributes in an existing table (can be a relation or view)
@@ -95,14 +97,81 @@ void Database::rename(string new_view, string existing_table, vector<string> att
 }
 
 void Database::set_union(string view_name, string relation1_name, string relation2_name){
+vector< vector<string> > temp;
+bool equal = false;
+for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
+{
+	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
+	{
+		temp[i][j] = RELATION_LIST[1][i][j];
+	}
+}
 
+for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
+{
+	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
+	{
+		if (RELATION_LIST[2][i][j] != RELATION_LIST[1][i][j])
+			equal = true;
+	}
+	if (equal == true)
+	temp.push_back (RELATION_LIST[2][i][j]);
+}
 }
 
 void Database::set_difference(string view_name, string relation1_name, string relation2_name){
+vector< vector<string> > temp;
+bool equal = false;
+
+for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
+{
+	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
+	{
+		for (unsigned int k = 0; k < RELATION_LIST.size(); ++k)
+		{
+			for (unsigned int l = 0; l < RELATION_LIST.size(); ++l)
+			{
+				if (RELATION_LIST[1][i][j] == RELATION_LIST[2][k][l])
+				equal = true;
+			}
+			if (equal == false)
+			temp.push_back (RELATION_LIST[1][i][j]);
+		}
+	}
+}
 
 }
 
 void Database::cross_product(string view_name, string relation1_name, string relation2_name){
+
+vector< vector<string> > temp;
+for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
+{
+	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
+	{
+		for (unsigned int k = 0; k < RELATION_LIST.size(); ++k)
+		{
+			for (unsigned int l = 0; l <RELATION_LIST-size(); ++l)
+			{
+				temp[k + i][l + j] = RELATION_LIST[1][i][j];
+			}
+		}
+	}
+}
+
+for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
+{
+	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
+	{
+		for (unsigned int k = 0; k < RELATION_LIST.size(); ++k)
+		{
+			for (unsigned int l = 0; l <RELATION_LIST.size(); ++l)
+			{
+				temp[k + 2 + i][l + 2 + j] = RELATION_LIST[2][k][l];
+			}
+		}
+	}
+}
 
 }
 
@@ -119,23 +188,57 @@ void Database::write(string table_name){
 }
 
 void Database::show(string table_name){
-
-}
-
-void Database::create(string table_name, vector<string> attributes, vector<string> keys){
-	//vector<vector<string>> TEMP_TABLE;				//initialize temporary table that will be pushed into RELATION_TABLE vector  - JM
-	/*TEMP_TABLE[0][0] = table_name;					//initialize table name
-	va_list ATTRIBUTE_LIST;
-	va_start(ATTRIBUTE_LIST, data);
-	
-	for(unsigned int i=0; i<num_attr; i++){
-		TEMP_TABLE[1][i]=data;
-		va_arg(ATTRIBUTE_LIST, data);
+	int INDEX = get_relation_index(table_name);
+	int TABLE_TYPE = RELATION;
+	if(INDEX == -1){
+		INDEX = get_view_index(table_name);
+		TABLE_TYPE = VIEW;
+	}
+	if(TABLE_TYPE == RELATION){
+		cout<<RELATION_LIST[INDEX][0][0]<<" (";
+		for(unsigned int i=1; i<RELATION_LIST[INDEX].size(); i++)
+			cout<<RELATION_LIST[INDEX][0][i]<<" ";
+		cout<<")"<<endl;
+		for(unsigned int i=0; i<RELATION_LIST[INDEX].size(); i++)
+			for(unsigned int j=0; j<RELATION_LIST[INDEX][i].size(); j++){
+				cout<<RELATION_LIST[INDEX][i][j]<<"\t";
+				cout<<endl;
+			}
+		cout<<endl;
+	}
+	else{
+		cout<<VIEW_LIST[INDEX][0][0]<<" (";
+		for(unsigned int i=1; i<VIEW_LIST[INDEX].size(); i++)
+			cout<<VIEW_LIST[INDEX][0][i]<<" ";
+		cout<<")"<<endl;
+		for(unsigned int i=0; i<VIEW_LIST[INDEX].size(); i++)
+			for(unsigned int j=0; j<VIEW_LIST[INDEX][i].size(); j++){
+				cout<<VIEW_LIST[INDEX][i][j]<<"\t";
+				cout<<endl;
+			}
+		cout<<endl;
 	}
 
-	va_end(ATTRIBUTE_LIST);
-	RELATION_TABLE.push_back(TEMP_TABLE);*/
 }
+
+void Database::create(string table_name, vector<string> attributes, vector<string> attribute_types, vector<string> keys){
+	vector<vector<string>> TEMP_RELATION_TABLE;
+	vector<string> temp_vec1, temp_vec2, temp_vec3;
+
+	temp_vec1.push_back(table_name);
+
+	for(unsigned int i=0; i<keys.size(); i++)
+		temp_vec1.push_back(keys[i]);
+	for(unsigned int i=0; i<attributes.size(); i++)
+		temp_vec2.push_back(attributes[i]);
+	for(unsigned int i=0; i<attribute_types.size(); i++)
+		temp_vec3.push_back(attribute_types[i]);
+
+	TEMP_RELATION_TABLE.push_back(temp_vec1);
+	TEMP_RELATION_TABLE.push_back(temp_vec2);
+	TEMP_RELATION_TABLE.push_back(temp_vec3);
+}
+
 
 void Database::update(string relation_name, vector<string>attribute, vector<string> data, int row_index){
 	int relation_index = -1;
@@ -160,6 +263,10 @@ void Database::update(string relation_name, vector<string>attribute, vector<stri
 	// update attributes
 	for(unsigned int i = 0; i < attribute_indices.size(); ++i)
 		RELATION_LIST[relation_index][row_index][attribute_indices[i]] = data[i];
+
+
+
+
 }
 
 void Database::insert_tuple(string relation_name, vector<string> tuple){
