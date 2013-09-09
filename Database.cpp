@@ -130,8 +130,6 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 	if (equal == true)
 	temp.push_back (RELATION_LIST[2][i][j]);
 }
-
-return temp;
 }
 
 void Database::set_difference(string view_name, string relation1_name, string relation2_name){
