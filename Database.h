@@ -45,7 +45,7 @@ public:
 	void close(string table_name);
 	void write(string table_name);
 	void show(string table_name);
-	void create(string table_name, vector<string> attributes, vector<string> keys);
+	void create(string table_name, vector<string> attributes, vector<string> attribute_keys, vector<string> keys);
 	void update(string relation_name, vector<string> attribute, vector<string> data, int row_index);
 	void insert_tuple(string relation_name, vector<string> tuple);
 	void insert_view(string relation_name, string view_name);
