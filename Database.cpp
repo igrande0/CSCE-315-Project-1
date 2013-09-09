@@ -128,8 +128,8 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 		if (RELATION_LIST[2][i][j] != RELATION_LIST[1][i][j])
 			equal = true;
 	}
-	if (equal == true)
-	temp.push_back (RELATION_LIST[2][i][j]);
+	//if (equal == true)
+	//temp.push_back (RELATION_LIST[2][i][j]);
 }
 }
 
@@ -148,8 +148,8 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 				if (RELATION_LIST[1][i][j] == RELATION_LIST[2][k][l])
 				equal = true;
 			}
-			if (equal == false)
-			temp.push_back (RELATION_LIST[1][i][j]);
+			//if (equal == false)
+			//temp.push_back (RELATION_LIST[1][i][j]);
 		}
 	}
 }
@@ -165,7 +165,7 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 	{
 		for (unsigned int k = 0; k < RELATION_LIST.size(); ++k)
 		{
-			for (unsigned int l = 0; l <RELATION_LIST-size(); ++l)
+			for (unsigned int l = 0; l <RELATION_LIST.size(); ++l)
 			{
 				temp[k + i][l + j] = RELATION_LIST[1][i][j];
 			}
