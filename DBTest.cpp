@@ -89,7 +89,7 @@ int main() {
 	db.show("table2");
 	
 	cout << "TEST REMOVE(): remove row 4\n";
-	db.remove(title, 4);
+	db.remove(title, 5);
 	db.show(title);
 	cout << "\n\n";
 	
@@ -130,5 +130,11 @@ int main() {
 	db.set_union("view4", title, "table2");
 	db.show("view4");
 	cout << "\n\n";
+
+
+	cout << "TEST SET_DIFFERENCE()\n";
+	db.set_difference("view5", title, "table2");
+	db.show("view5");
+	cout<<"\n\n";
 	
 }

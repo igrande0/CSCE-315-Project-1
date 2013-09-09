@@ -126,11 +126,30 @@ void Database::set_union(string view_name, string relation1_name, string relatio
 }
 
 void Database::set_difference(string view_name, string relation1_name, string relation2_name){
-vector< vector<string> > temp;
-int relation1 = get_relation_index(relation1_name);
-int relation2 = get_relation_index(relation2_name);
-bool equal = false;
+	vector<vector<string>> temp;
+	int relation1 = get_relation_index(relation1_name);
+	int relation2 = get_relation_index(relation2_name);
+	bool equal = false;
+	vector<string> temp_vec;
+	temp_vec.push_back(view_name);
+	for(unsigned int i=1; i<RELATION_LIST[relation1][0].size(); i++)
+		temp_vec.push_back(RELATION_LIST[relation1][0][i]);
+	temp.push_back(temp_vec);
+	temp.push_back(RELATION_LIST[relation1][1]);
+	temp.push_back(RELATION_LIST[relation1][2]);
 
+	for(unsigned int i=3; i<RELATION_LIST[relation1].size(); i++){
+		for(unsigned int j=3; j<RELATION_LIST[relation2].size(); j++)
+			if(RELATION_LIST[relation1][i] == RELATION_LIST[relation2][j])
+				equal = true;
+		if(equal == false){
+			temp.push_back(RELATION_LIST[relation1][i]);
+			cout<<"inserted\n";
+		}
+		equal = false;
+	}
+	VIEW_LIST.push_back(temp);
+/*
 for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 {
 	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
@@ -147,7 +166,7 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 		}
 	}
 }
-temp[0][0] = view_name;
+temp[0][0] = view_name;*/
 
 }
 
