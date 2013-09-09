@@ -206,19 +206,22 @@ void Database::show(string table_name){
 
 }
 
-void Database::create(string table_name, vector<string> attributes, vector<string> keys){
-	//vector<vector<string>> TEMP_TABLE;				//initialize temporary table that will be pushed into RELATION_TABLE vector  - JM
-	/*TEMP_TABLE[0][0] = table_name;					//initialize table name
-	va_list ATTRIBUTE_LIST;
-	va_start(ATTRIBUTE_LIST, data);
-	
-	for(unsigned int i=0; i<num_attr; i++){
-		TEMP_TABLE[1][i]=data;
-		va_arg(ATTRIBUTE_LIST, data);
-	}
+void Database::create(string table_name, vector<string> attributes, vector<string> attribute_types, vector<string> keys){
+	vector<vector<string>> TEMP_RELATION_TABLE;
+	vector<string> temp_vec1, temp_vec2, temp_vec3;
 
-	va_end(ATTRIBUTE_LIST);
-	RELATION_TABLE.push_back(TEMP_TABLE);*/
+	temp_vec1.push_back(table_name);
+
+	for(unsigned int i=0; i<keys.size(); i++)
+		temp_vec1.push_back(keys[i]);
+	for(unsigned int i=0; i<attributes.size(); i++)
+		temp_vec2.push_back(attributes[i]);
+	for(unsigned int i=0; i<attribute_types.size(); i++)
+		temp_vec3.push_back(attribute_types[i]);
+
+	TEMP_RELATION_TABLE.push_back(temp_vec1);
+	TEMP_RELATION_TABLE.push_back(temp_vec2);
+	TEMP_RELATION_TABLE.push_back(temp_vec3);
 }
 
 void Database::update(string relation_name, string left_arg, string right_arg, string condition, vector<string> attributes){       //need to rethink arguments - JM
