@@ -51,6 +51,7 @@ int main() {
 	db.insert_tuple(title, tuple2);
 	db.insert_tuple(title, tuple3);
 	db.insert_tuple(title, tuple4);
+
 	db.show(title);
 	db.remove(title, 4);
 	db.show(title);
@@ -62,7 +63,7 @@ int main() {
 	db.show(title);
 	db.select("view1", title, 3);
 	db.select("view1", title, 5);
-	//db.show("view1");              //dumps core? couldnt figure out gbd - JM
+	db.show("view1");              //dumps core? couldnt figure out gbd - JM
 	
 
 

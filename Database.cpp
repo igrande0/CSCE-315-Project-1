@@ -208,17 +208,15 @@ void Database::show(string table_name){
 	}
 	else{
 		cout<<VIEW_LIST[INDEX][0][0]<<" (";
-		for(unsigned int i=1; i<VIEW_LIST[INDEX].size(); i++)
-			cout<<VIEW_LIST[INDEX][0][i]<<" ";
+		for(unsigned int i=1; i<VIEW_LIST[INDEX][0].size(); i++)
+			cout<<VIEW_LIST[INDEX][0][i]<<",";
 		cout<<")"<<endl;
-		for(unsigned int i=0; i<VIEW_LIST[INDEX].size(); i++)
+		for(unsigned int i=1; i<VIEW_LIST[INDEX].size(); i++)
 			for(unsigned int j=0; j<VIEW_LIST[INDEX][i].size(); j++){
 				cout<<VIEW_LIST[INDEX][i][j]<<"\t";
-				cout<<endl;
 			}
 		cout<<endl;
 	}
-
 }
 
 void Database::create(string table_name, vector<string> attributes, vector<string> attribute_types, vector<string> keys){
