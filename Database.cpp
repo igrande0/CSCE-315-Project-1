@@ -180,7 +180,7 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 	{
 		for (unsigned int k = 0; k < RELATION_LIST.size(); ++k)
 		{
-			for (unsigned int l = 0; l <RELATION_LIST-size(); ++l)
+			for (unsigned int l = 0; l <RELATION_LIST.size(); ++l)
 			{
 				temp[k + 2 + i][l + 2 + j] = RELATION_LIST[2][k][l];
 			}
