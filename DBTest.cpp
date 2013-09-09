@@ -126,7 +126,9 @@ int main() {
 	db.show("view3");
 	cout << "\n\n";
 	
-	
-	
+	cout << "TEST SET_UNION()\n";
+	db.set_union("view4", title, "table2");
+	db.show("view4");
+	cout << "\n\n";
 	
 }
