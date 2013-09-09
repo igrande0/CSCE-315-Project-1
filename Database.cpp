@@ -1,6 +1,7 @@
 #include "Database.h"
 
 #include <cctype>
+#include <iostream>
 
 #define RELATION 0
 #define VIEW 1
@@ -181,6 +182,36 @@ void Database::write(string table_name){
 }
 
 void Database::show(string table_name){
+	int INDEX = get_relation_index(table_name);
+	int TABLE_TYPE = RELATION;
+	if(INDEX == -1){
+		INDEX = get_view_index(table_name);
+		TABLE_TYPE = VIEW;
+	}
+	if(TABLE_TYPE == RELATION){
+		cout<<RELATION_LIST[INDEX][0][0]<<" (";
+		for(unsigned int i=1; i<RELATION_LIST[INDEX].size(); i++)
+			cout<<RELATION_LIST[INDEX][0][i]<<" ";
+		cout<<")"<<endl;
+		for(unsigned int i=0; i<RELATION_LIST[INDEX].size(); i++)
+			for(unsigned int j=0; j<RELATION_LIST[INDEX][i].size(); j++){
+				cout<<RELATION_LIST[INDEX][i][j]<<"\t";
+				cout<<endl;
+			}
+		cout<<endl;
+	}
+	else{
+		cout<<VIEW_LIST[INDEX][0][0]<<" (";
+		for(unsigned int i=1; i<VIEW_LIST[INDEX].size(); i++)
+			cout<<VIEW_LIST[INDEX][0][i]<<" ";
+		cout<<")"<<endl;
+		for(unsigned int i=0; i<VIEW_LIST[INDEX].size(); i++)
+			for(unsigned int j=0; j<VIEW_LIST[INDEX][i].size(); j++){
+				cout<<VIEW_LIST[INDEX][i][j]<<"\t";
+				cout<<endl;
+			}
+		cout<<endl;
+	}
 
 }
 
