@@ -1,4 +1,4 @@
-CSCE-315-Project-1
+CSCE 315 Project 1
 ==================
 Fully working DBMS engine.
 
