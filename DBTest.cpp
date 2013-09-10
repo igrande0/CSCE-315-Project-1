@@ -136,5 +136,10 @@ int main() {
 	db.set_difference("view5", title, "table2");
 	db.show("view5");
 	cout<<"\n\n";
+
+	cout << "TEST CROSS_PRODUCT\n";
+	db.cross_product("view6", title, "table2");
+	db.show("view6");
+	cout<<"\n\n";
 	
 }

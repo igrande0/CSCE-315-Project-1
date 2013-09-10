@@ -144,29 +144,10 @@ void Database::set_difference(string view_name, string relation1_name, string re
 				equal = true;
 		if(equal == false){
 			temp.push_back(RELATION_LIST[relation1][i]);
-			cout<<"inserted\n";
 		}
 		equal = false;
 	}
 	VIEW_LIST.push_back(temp);
-/*
-for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
-{
-	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
-	{
-		for (unsigned int k = 0; k < RELATION_LIST.size(); ++k)
-		{
-			for (unsigned int l = 0; l < RELATION_LIST.size(); ++l)
-			{
-				if (RELATION_LIST[relation1][i][j] == RELATION_LIST[relation2][k][l])
-				equal = true;
-			}
-			if (equal == false)
-			temp[i][j] = (RELATION_LIST[relation1][i][j]);
-		}
-	}
-}
-temp[0][0] = view_name;*/
 
 }
 
@@ -175,7 +156,18 @@ void Database::cross_product(string view_name, string relation1_name, string rel
 vector< vector<string> > temp;
 int relation1 = get_relation_index(relation1_name);
 int relation2 = get_relation_index(relation2_name);
-for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
+vector<string> temp_vec;
+temp_vec.push_back(view_name);
+temp_vec.push_back("key");
+temp.push_back(temp_vec);
+for(unsigned int i=1; i<RELATION_LIST[relation1].size(); i++){
+	vector<string> vec = RELATION_LIST[relation1][i];
+	for(unsigned int j=0; j<RELATION_LIST[relation2][i].size(); j++)
+		vec.push_back(RELATION_LIST[relation2][i][j]);
+	temp.push_back(vec);
+}
+VIEW_LIST.push_back(temp);
+/*for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 {
 	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
 	{
@@ -203,7 +195,7 @@ for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
 	}
 }
 temp[0][0] = view_name;
-
+*/
 }
 
 /*------------------------------------------------------------------------------------*/
