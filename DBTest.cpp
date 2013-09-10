@@ -5,7 +5,7 @@
 int main() {
 	Database db;
 
-	string title = "Table";
+	string title = "Relation 1";
 	vector<string> keys;
 	vector<string> attributes;
 	vector<string> attribute_types;
@@ -80,20 +80,21 @@ int main() {
 	tuple8.push_back("4");
 	tuple8.push_back("2004-06-13");
 	tuple8.push_back("89.38");
-	db.create("table2", attributes, attribute_types, keys);
-	db.insert_tuple("table2", tuple5);
-	db.insert_tuple("table2", tuple6);
-	db.insert_tuple("table2", tuple7);
-	db.insert_tuple("table2", tuple8);
-	cout<<"\n\n TABLE 2:\n";
-	db.show("table2");
+
+	db.create("Relation 2", attributes, attribute_types, keys);
+	db.insert_tuple("Relation 2", tuple5);
+	db.insert_tuple("Relation 2", tuple6);
+	db.insert_tuple("Relation 2", tuple7);
+	db.insert_tuple("Relation 2", tuple8);
+	db.show("Relation 2");
+	cout << "\n\n\n\n";
 	
-	cout << "TEST REMOVE(): remove row 4\n";
+	cout << "TEST REMOVE(): remove row 4 of relation 1\n";
 	db.remove(title, 5);
 	db.show(title);
 	cout << "\n\n";
 	
-	cout << "TEST UPDATE(): change Attribute 2 on row 3 to '55'\n";
+	cout << "TEST UPDATE(): change Attribute 2 on row 3 of relation 1 to '55'\n";
 	vector<string> attribute;
 	attribute.push_back("Attribute 2");
 	vector<string> data;
@@ -102,22 +103,17 @@ int main() {
 	db.show(title);
 	cout << "\n\n";
 	
-	cout << "TEST SELECT(): select row 3 and row 5\n";
+	cout << "TEST SELECT(): select row 3 and row 5 of relation 1\n";
 	db.select("view1", title, 3);
 	db.select("view1", title, 5);
 	db.show("view1");
-	cout << "\n\n";
-		
-	cout << "TEST INSERT_VIEW(): insert view1 into Table\n";
-	db.insert_view(title, "view1");
-	db.show(title);
 	cout << "\n\n";
 	
 	cout << "TEST PROJECT(): project the Attribute 2 column\n";
 	db.project("view2", title, attribute);
 	db.show("view2");
 	
-	cout<< "Test RENAME(): \n";
+	cout<< "TEST RENAME(): \n";
 	attributes[0] = "Attribute 5";
 	attributes[1] = "Attribute 6";
 	attributes[2] = "Attribute 7";
@@ -126,20 +122,23 @@ int main() {
 	db.show("view3");
 	cout << "\n\n";
 	
-	cout << "TEST SET_UNION()\n";
-	db.set_union("view4", title, "table2");
+	cout << "TEST SET_UNION(): relation 1 in union with relation 2\n";
+	db.set_union("view4", title, "Relation 2");
 	db.show("view4");
 	cout << "\n\n";
 
-
-	cout << "TEST SET_DIFFERENCE()\n";
-	db.set_difference("view5", title, "table2");
+	cout << "TEST SET_DIFFERENCE(): relation 1 - relation 2 \n";
+	db.set_difference("view5", title, "Relation 2");
 	db.show("view5");
 	cout<<"\n\n";
 
-	cout << "TEST CROSS_PRODUCT\n";
-	db.cross_product("view6", title, "table2");
+	cout << "TEST CROSS_PRODUCT(): relation 1 X relation 2\n";
+	db.cross_product("view6", title, "Relation 2");
 	db.show("view6");
 	cout<<"\n\n";
-	
+
+	cout << "TEST INSERT_VIEW(): insert view1 into relation 1\n";
+	db.insert_view(title, "view1");
+	db.show(title);
+	cout << "\n\n";
 }

@@ -105,24 +105,43 @@ void Database::rename(string new_view, string existing_table, vector<string> att
 }
 
 void Database::set_union(string view_name, string relation1_name, string relation2_name){
-	vector< vector<string> > temp;
-	int relation1 = get_relation_index(relation1_name);
-	int relation2 = get_relation_index(relation2_name);
-	vector<string> temp_vec;
-	temp_vec.push_back(view_name);
-	for(unsigned int i=1; i<RELATION_LIST[relation2][0].size(); i++)
-		temp_vec.push_back(RELATION_LIST[relation2][0][i]);
-	temp.push_back(temp_vec);
+	int r1_index;
+	int r2_index;
 
-	for(unsigned int i=0; i<RELATION_LIST[relation1].size(); i++)
-	{
-		for(unsigned int j=0; j<RELATION_LIST[relation2].size(); ++j)
-		{
-			if (RELATION_LIST[relation2][i] == RELATION_LIST[relation1][j])
-				temp.push_back(RELATION_LIST[relation2][i]);
-		}
-	}
-	VIEW_LIST.push_back(temp);
+	// ERROR - no such table
+	if((r1_index = get_relation_index(relation1_name)) == -1)
+		;
+	// ERROR - no such table
+	if((r2_index = get_relation_index(relation2_name)) == -1)
+		;
+
+	// ERROR - non-matching attributes
+	if(RELATION_LIST[r1_index][1] != RELATION_LIST[r2_index][1] 
+	|| RELATION_LIST[r1_index][2] != RELATION_LIST[r2_index][2])
+		;
+
+	// create new view table
+	VIEW_LIST.push_back(vector<vector<string> >());
+	vector<vector<string> >& view = VIEW_LIST[VIEW_LIST.size() - 1];
+
+	// set title and copy keys
+	view.push_back(vector<string> ());
+	view[0].push_back(view_name);
+	view[0].insert(view[0].end(), RELATION_LIST[r1_index][0].begin() + 1, RELATION_LIST[r1_index][0].end());
+
+	// copy relation 1 to view table
+	for(unsigned int i = 1; i < RELATION_LIST[r1_index].size(); ++i)
+		view.push_back(RELATION_LIST[r1_index][i]);
+	
+	// copy tuples from relation 2 to view table
+	for(unsigned int i = 3; i < RELATION_LIST[r2_index].size(); ++ i)
+		view.push_back(RELATION_LIST[r2_index][i]);
+
+	// remove duplicates
+	for(unsigned int i = 3; i < view.size(); ++i)
+		for(unsigned int j = i + 1; j < view.size(); ++j)
+			if(view[i] == view[j])
+				view.erase(view.begin() + j);
 }
 
 void Database::set_difference(string view_name, string relation1_name, string relation2_name){
@@ -152,50 +171,43 @@ void Database::set_difference(string view_name, string relation1_name, string re
 }
 
 void Database::cross_product(string view_name, string relation1_name, string relation2_name){
+	int r1_index;
+	int r2_index;
+	vector<string> attributes;
+	vector<string> types;
 
-vector< vector<string> > temp;
-int relation1 = get_relation_index(relation1_name);
-int relation2 = get_relation_index(relation2_name);
-vector<string> temp_vec;
-temp_vec.push_back(view_name);
-temp_vec.push_back("key");
-temp.push_back(temp_vec);
-for(unsigned int i=1; i<RELATION_LIST[relation1].size(); i++){
-	vector<string> vec = RELATION_LIST[relation1][i];
-	for(unsigned int j=0; j<RELATION_LIST[relation2][i].size(); j++)
-		vec.push_back(RELATION_LIST[relation2][i][j]);
-	temp.push_back(vec);
-}
-VIEW_LIST.push_back(temp);
-/*for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
-{
-	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
-	{
-		for (unsigned int k = 0; k < RELATION_LIST.size(); ++k)
-		{
-			for (unsigned int l = 0; l <RELATION_LIST.size(); ++l)
-			{
-				temp[k + i][l + j] = RELATION_LIST[relation1][i][j];
-			}
-		}
-	}
-}
+	// ERROR - no such table
+	if((r1_index = get_relation_index(relation1_name)) == -1)
+		;
+	// ERROR - no such table
+	if((r2_index = get_relation_index(relation2_name)) == -1)
+		;
 
-for (unsigned int i = 0; i < RELATION_LIST.size(); ++i)
-{
-	for (unsigned int j = 0; j < RELATION_LIST.size(); ++j)
-	{
-		for (unsigned int k = 0; k < RELATION_LIST.size(); ++k)
-		{
-			for (unsigned int l = 0; l <RELATION_LIST.size(); ++l)
-			{
-				temp[k + 2 + i][l + 2 + j] = RELATION_LIST[relation2][k][l];
-			}
+	// create new view table
+	VIEW_LIST.push_back(vector<vector<string> >());
+	vector<vector<string> >& view = VIEW_LIST[VIEW_LIST.size() - 1];
+
+	// set title
+	view.push_back(vector<string>());
+	view[0].push_back(view_name);
+
+	// merge attributes and attribute types
+	attributes = RELATION_LIST[r1_index][1];
+	attributes.insert(attributes.end(), RELATION_LIST[r2_index][1].begin(), RELATION_LIST[r2_index][1].end());
+	types = RELATION_LIST[r1_index][2];
+	types.insert(types.end(), RELATION_LIST[r2_index][2].begin(), RELATION_LIST[r2_index][2].end());
+
+	view.push_back(attributes);
+	view.push_back(types);
+
+	// perform cross product
+	for(unsigned int i=3; i<RELATION_LIST[r1_index].size(); i++)
+		for(unsigned int j=3; j<RELATION_LIST[r2_index].size(); j++) {
+			vector<string> tuple;
+			tuple = RELATION_LIST[r1_index][i];
+			tuple.insert(tuple.end(), RELATION_LIST[r2_index][j].begin(), RELATION_LIST[r2_index][j].end());
+			view.push_back(tuple);
 		}
-	}
-}
-temp[0][0] = view_name;
-*/
 }
 
 /*------------------------------------------------------------------------------------*/
