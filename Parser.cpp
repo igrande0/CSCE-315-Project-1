@@ -1,7 +1,12 @@
 #include Parser.h
 #include <sstream>
 
-void Parser::query(string INPUT_STRING){  //not sure about stringstream, i dont know tokens well enough so this is what i started with - JM
+void Parser::execute(string input) {
+	lex(input);
+	parse();
+}
+
+void Parser::lex(string INPUT_STRING){  //not sure about stringstream, i dont know tokens well enough so this is what i started with - JM
   std::stringstream STRING_STREAM;
   string FIRST_KEYWORD;
   STRING_STREAM << INPUT_STRING;
@@ -9,15 +14,7 @@ void Parser::query(string INPUT_STRING){  //not sure about stringstream, i dont 
   string RELATION_TITLE;
   int RELATION_INDEX;
   
-  /* struct Token { //I'm pretty sure that tokens are what the parser reads in, and then converts it to data compatible with the program. The last time I wrote a parser, the token was similar to this, but feel free to change 
-					//if you think it should be done differently
-  string name;
-  string attribute1;
-  string attribute2;
-  string attribute3;
-  string attribute4;
-  
-  };*/
+
   switch(FIRST_KEYWORD){
     case "CREATE":
       STRING_STREAM >> RELATION_TITLE;
@@ -54,4 +51,8 @@ void Parser::query(string INPUT_STRING){  //not sure about stringstream, i dont 
     
       break;
   }
+}
+
+void Parser::parse() {
+
 }
