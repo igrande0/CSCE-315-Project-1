@@ -7,6 +7,7 @@ void Parser::query(string INPUT_STRING){  //not sure about stringstream, i dont 
   STRING_STREAM << INPUT_STRING;
   STRING_STREAM >> FIRST_KEYWORD;
   string RELATION_TITLE;
+  int RELATION_INDEX;
   
   /* struct Token { //I'm pretty sure that tokens are what the parser reads in, and then converts it to data compatible with the program. The last time I wrote a parser, the token was similar to this, but feel free to change 
 					//if you think it should be done differently
@@ -20,8 +21,15 @@ void Parser::query(string INPUT_STRING){  //not sure about stringstream, i dont 
   switch(FIRST_KEYWORD){
     case "CREATE":
       STRING_STREAM >> RELATION_TITLE;
+	  RELATION_INDEX = DB.get_realtion_index(RELATION_TITLE);
       break;
     case "INSERT":
+		string SECOND_KEYWORD;
+		STRING_STREAM >> SECOND_KEYWORD;
+		if(SECOND_KEYWORD == "INTO"){
+			STRING_STREAM >> RELATION_TITLE;
+			RELATION_INDEX = DB.get_relation_index(RELATION_TITLE);
+		}
     
       break;
     case "UPDATE":
