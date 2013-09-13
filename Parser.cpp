@@ -7,6 +7,16 @@ void Parser::query(string INPUT_STRING){  //not sure about stringstream, i dont 
   STRING_STREAM << INPUT_STRING;
   STRING_STREAM >> FIRST_KEYWORD;
   string RELATION_TITLE;
+  
+  /* struct Token { //I'm pretty sure that tokens are what the parser reads in, and then converts it to data compatible with the program. The last time I wrote a parser, the token was similar to this, but feel free to change 
+					//if you think it should be done differently
+  string name;
+  string attribute1;
+  string attribute2;
+  string attribute3;
+  string attribute4;
+  
+  };*/
   switch(FIRST_KEYWORD){
     case "CREATE":
       STRING_STREAM >> RELATION_TITLE;
