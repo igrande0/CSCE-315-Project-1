@@ -1,9 +1,10 @@
 #ifndef PARSER_H_
 #define PARSER_H_
 
-#include Database.h
-
 #include <string>
+#include <vector>
+
+using namespace std;
 
 class Parser{
 
@@ -34,7 +35,7 @@ private:
 	void parse();
 
 	int accept(Token);
-	int expect(Token);
+	int expect(Token, string error);
 
 	void query();
 	void command();
@@ -58,10 +59,10 @@ private:
 	void typed_attribute_list();
 	void type();
 
-	vector<string> tokens;
+	vector<Token> tokens;
 	vector<string> raw_data;
 
-	int current_index;
-}
+	int current_index = 0;
+};
 
 #endif
