@@ -19,7 +19,7 @@ DBTest.o: DBTest.cpp Database.h
 	$(CC) $(CFLAGS) DBTest.cpp
 
 parsertest: $(POBJS)
-	$(CC) $(LFLAGS) $(DBOBJS) -o parsertest
+	$(CC) $(LFLAGS) $(POBJS) -o parsertest
 
 Parser.o: Parser.cpp Parser.h
 	$(CC) $(CFLAGS) Parser.cpp
