@@ -335,6 +335,10 @@ void Database::remove(string relation_name, int row_index){
 	RELATION_LIST[relation_index].erase(RELATION_LIST[relation_index].begin() + row_index);
 }
 
+/*------------------------------------------------------------------------------------*/
+/* UTILITY FUNCTIONS */
+/*------------------------------------------------------------------------------------*/
+
 bool Database::compare(string attribute_type, string left_arg, string right_arg, string comparison_op) {
 	bool result;
 	switch(attribute_type[0]) {
