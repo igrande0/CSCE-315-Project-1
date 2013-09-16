@@ -159,14 +159,13 @@ void Parser::expression() {
 		projection();
 	else if(accept(RENAME))
 		renaming();
-	/*************************NEEDS TO BE RETHOUGHT*************************/
-	/*else if(accept(UNION))
-		unions();
-	else if(accept(DIFFERENCE))
-		difference();
-	else if(accept(PRODUCT))
-		product();*/
 	atomic_expr();
+	if(accept(PLUS)) 
+		atomic_expr();
+	else if(accept(MINUS)) 
+		atomic_expr();
+	else if(accept(TIMES)) 
+		atomic_expr();
 }
 
 void Parser::atomic_expr() {
@@ -199,24 +198,6 @@ void Parser::renaming() {
 	expect(LPAREN, "projection: expected '('");
 	attribute_list();
 	expect(RPAREN, "projection: expected ')'");
-	atomic_expr();
-}
-
-void Parser::unions() {
-	atomic_expr();
-	expect(PLUS, "union: expected '+'");
-	atomic_expr();
-}
-
-void Parser::difference() {
-	atomic_expr();
-	expect(MINUS, "difference: expected '-'");
-	atomic_expr();
-}
-
-void Parser::product() {
-	atomic_expr();
-	expect(TIMES, "difference: expected '*'");
 	atomic_expr();
 }
 
