@@ -19,8 +19,8 @@ void Parser::execute(string input) {
 void Parser::lex(string INPUT_STRING) {
 	raw_data.clear();
 	tokens.clear();
+	//cout << "-----------------------------------------------------------------------------\n";
 	for(unsigned int INDEX = 0; INDEX<INPUT_STRING.size();){
-	
 		unsigned int START_INDEX = INDEX;
 		bool check = false;
 		while(isalpha(INPUT_STRING[INDEX]) || isdigit(INPUT_STRING[INDEX]) || INPUT_STRING[INDEX] == '_'){
@@ -53,8 +53,8 @@ void Parser::lex(string INPUT_STRING) {
 				}
 					
 			}
-			cout<<TEMP_STRING<<" \n";
 			add_token(get_token(TEMP_STRING), TEMP_STRING);
+			//cout << raw_data[raw_data.size()-1] << "   |   ";
 		}
 		else{	
 			string SWITCH_STRING;
@@ -164,7 +164,7 @@ void Parser::lex(string INPUT_STRING) {
 						add_token(LITERAL, SWITCH_STRING);
 
 					break;
-				case ' ': case '\n':
+				case ' ': case '\n': case '\r':
 					break;
 				default:
 					//cout<<INPUT_STRING[INDEX]<<endl;
@@ -172,8 +172,9 @@ void Parser::lex(string INPUT_STRING) {
 					break;
 			}
 			INDEX++;
+			//cout << raw_data[raw_data.size()-1] << "   |   ";
 		}
-	}
+	}	
 }
 
 void Parser::add_token(Token token, string s){
@@ -311,7 +312,16 @@ void Parser::command() {
 		expect(IDENTIFIER, "insert into: expected identifier");
 		if(accept(VALUES_FROM)) {
 			expect(LPAREN, "insert into: expected '('");
-			attribute_list();
+			do {
+				if(accept(LITERAL)) {
+				
+				}
+				else if(accept(INTEGER)) {
+				
+				}
+				else
+					throw runtime_error("insert into: unexpected symbol");
+			} while(accept(COMMA));
 			expect(RPAREN, "insert into: expected ')'");
 		}
 		else if(accept(VALUES_FROM_RELATION)) {
