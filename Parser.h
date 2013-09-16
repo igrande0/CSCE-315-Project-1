@@ -24,7 +24,7 @@ public:
 		// others
 		// INTEGER - any amount of digits
 		// IDENTIFIER - starts with alpha, then any amount of alpha, digit, or "_"
-		// LITERAL - " (any amount of characters) "
+		// LITERAL - "(any amount of characters)"
 		INTEGER, IDENTIFIER, LITERAL
 	};
 	void execute(string input);
@@ -48,9 +48,6 @@ private:
 	void selection();
 	void projection();
 	void renaming();
-	void unions();
-	void difference();
-	void product();
 
 	void condition();
 	void conjunction();
