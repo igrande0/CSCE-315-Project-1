@@ -16,50 +16,206 @@ void Parser::execute(string input) {
 /*------------------------------------------------------------------------------------*/
 
 void Parser::lex(string INPUT_STRING) {
-	stringstream STRING_STREAM;
-	string FIRST_KEYWORD;
-	STRING_STREAM << INPUT_STRING;
-	STRING_STREAM >> FIRST_KEYWORD;
-  
-
-	// can't switch on strings - Isaac
-	/*switch(FIRST_KEYWORD){
-		case "CREATE":
-			STRING_STREAM >> RELATION_TITLE;
-			RELATION_INDEX = DB.get_realtion_index(RELATION_TITLE);
-			break;
-		case "INSERT":
-			string SECOND_KEYWORD;
-			STRING_STREAM >> SECOND_KEYWORD;
-			if(SECOND_KEYWORD == "INTO"){
-				STRING_STREAM >> RELATION_TITLE;
-				RELATION_INDEX = DB.get_relation_index(RELATION_TITLE);
+	for(int INDEX = 0; INDEX<INPUT_STRING.size();){
+	
+		int START_INDEX = INDEX;
+		bool check = false;
+		while(isalpha(INPUT_STRING[INDEX]) || isdigit(INPUT_STRING[INDEX]) || INPUT_STRING[INDEX] == '_'){
+			if(INDEX < INPUT_STRING.size())
+				INDEX++;
+			check = true;
+		}
+		int END_INDEX = INDEX - 1;
+		string TEMP_STRING;
+		if(check == true){
+			for(int i=START_INDEX; i<=END_INDEX; i++)
+				TEMP_STRING.push_back(INPUT_STRING[i]);
+			if(get_second_word(TEMP_STRING)){
+				TEMP_STRING.push_back(' ');
+				INDEX++;
+				while(isalpha(INPUT_STRING[INDEX])){
+					TEMP_STRING.push_back(INPUT_STRING[INDEX]);
+					if(INDEX < INPUT_STRING.size())
+						INDEX++;
+				}
+				if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == 'R'){
+					TEMP_STRING.push_back(' ');
+					INDEX++;
+					while(isalpha(INPUT_STRING[INDEX])){
+						TEMP_STRING.push_back(INPUT_STRING[INDEX]);
+						if(INDEX < INPUT_STRING.size())
+							INDEX++;
+					}
+					
+				}
+					
 			}
-    
-			break;
-		case "UPDATE":
-    
-			break;
-		case "DELETE":
-    
-			break;
-		case "SHOW":
-    
-			break;
-		case "OPEN":
-    
-			break;
-		case "CLOSE":
-    
-			break;
-		case "WRITE"
-    
-			break;
-		case "EXIT"
-    
-			break;
-	}*/
+			add_token(get_token(TEMP_STRING), TEMP_STRING);
+		}
+		else{	
+			string SWITCH_STRING;
+			switch(INPUT_STRING[INDEX]){
+				case '<':
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '='){
+						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1])
+						add_token(LEQ, SWITCH_STRING);
+					}
+					else if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '-'){
+						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1])
+						add_token(LARROW, SWITCH_STRING);
+					}
+					else
+						add_token(LESS, SWITCH_STRING);
+					break;
+				case '(':
+					add_token(LPAREN,string(INPUT_STRING[INDEX]));
+					break;
+				case ')':
+					add_token(RPAREN,string(INPUT_STRING[INDEX]));
+					break;
+				case '+':
+					add_token(PLUS,string(INPUT_STRING[INDEX]));
+					break;
+				case '-':
+					add_token(MINUS,string(INPUT_STRING[INDEX]));
+					break;
+				case '*':
+					add_token(TIMES,string(INPUT_STRING[INDEX]));
+					break;
+				case ',':
+					add_token(COMMA,string(INPUT_STRING[INDEX]));
+					break;
+				case ';':
+					add_token(SEMICOLON,string(INPUT_STRING[INDEX]));
+					break;
+				case '=':
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '='){
+						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1])
+						add_token(EQ,SWITCH_STRING);
+					}
+					else
+						add_token(EQUALS, SWITCH_STRING);
+					break;
+				case '!':
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX +1] == '='){
+						SWTICH_STRING.push_back(INPUT_STRING[INDEX+1])
+						add_token(NEQ, SWITCH_STRING);
+					}
+					else
+						throw runtime_error("Invalid char after '!'");
+					break;
+				case '>':
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '='){
+						SWTICH_STRING.push_back(INPUT_STRING[INDEX+1]);
+						add_token(GEQ,SWITCH_STRING);
+					}
+					else
+						add_token(GREATER, SWITCH_STRING);
+					break;
+				case '|':
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '|'){
+						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
+						add_token(OR,SWTICH_STRING);
+					}
+					else
+						throw runtime_error("Invalid char after '|'");
+					break;
+				case '&':
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '&'){
+						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
+						add_token(AND,SWTICH_STRING);
+					}
+					else
+						throw runtime_error("Invalid char after '&'");
+					break;
+				case '"':
+					INDEX++;
+					while(INPUT_STRING[INDEX] != '"' && INDEX < INPUT_STRING.size()){
+						SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+						INDEX++;
+					}
+					if(INPUT_STRING[INDEX] != '"')
+						throw runtime_error("Expected end of quotations");
+					else
+						add_token(LITERAL, SWITCH_STRING);
+
+					break;
+				case ' ':
+					break;
+				default:
+					throw runtime_error("Invalid token");
+					break;
+			}
+			INDEX++;
+		}
+	}
 }
+
+void Parser::add_token(Token token, string s){
+	tokens.push_back(token);
+	raw_data.push_back(s);
+}
+
+bool Parser::get_second_word(string FIRST_WORD){
+	if(FIRST_WORD == "CREATE" || FIRST_WORD == "PRIMARY" || FIRST_WORD == "INSERT" || FIRST_WORD == "VALUES" || FIRST_WORD == "DELETE")
+		return(true);
+	else
+		return(false);
+}
+
+Token Parser::get_token(string s){
+	if(s == "select")
+		return SELECT;
+	else if(s == "project")
+		return PROJECT;
+	else if(s == "OPEN")
+		return OPEN;
+	else if(s == "CLOSE")
+		return CLOSE;
+	else if(s == "WRITE")
+		return WRITE;
+	else if(s == "EXIT")
+		return EXIT;
+	else if(s == "SHOW")
+		return SHOW;
+	else if(s == "UPDATE")
+		return UPDATE;
+	else if(s == "SET")
+		return SET;
+	else if(s == "WHERE")
+		return WHERE;
+	else if (s == "CREATE TABLE")
+		return CREATE_TABLE;
+	else if (s == "PRIMARY KEY")
+		return PRIMARY_KEY;
+	else if (s == "INSERT INTO")
+		return INSERT_INTO;
+	else if (s == "VALUES FROM")
+		return VALUES_FROM;
+	else if (s == "VALUES FROM RELATION")
+		return VALUES_FROM_RELATION;
+	else if (s == "DELETE FROM")
+		return DELETE_FROM;
+	else if(s == "VARCHAR")
+		return VARCHAR;
+	else if(s == "INTEGER")
+		return INTEGER_SYM;
+	else if(string(stoi(s)) == s)
+		return INTEGER;
+	else if(isalpha(s[0]))
+		return IDENTIFIER;
+	else
+		throw runtime_error("Invalid token");
+}
+
+
+
 
 /*------------------------------------------------------------------------------------*/
 /* RECURSIVE DESCENT PARSER */

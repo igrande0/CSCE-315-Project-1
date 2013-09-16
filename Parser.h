@@ -29,6 +29,9 @@ public:
 	};
 	void execute(string input);
 	string get_error();
+	bool get_second_word(string FIRST_WORD);
+	void add_token(Token token, string s);
+	Token get_token(string s);
 
 private:
 	void lex(string input);
