@@ -3,6 +3,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -16,19 +17,21 @@ void Parser::execute(string input) {
 /*------------------------------------------------------------------------------------*/
 
 void Parser::lex(string INPUT_STRING) {
-	for(int INDEX = 0; INDEX<INPUT_STRING.size();){
+	raw_data.clear();
+	tokens.clear();
+	for(unsigned int INDEX = 0; INDEX<INPUT_STRING.size();){
 	
-		int START_INDEX = INDEX;
+		unsigned int START_INDEX = INDEX;
 		bool check = false;
 		while(isalpha(INPUT_STRING[INDEX]) || isdigit(INPUT_STRING[INDEX]) || INPUT_STRING[INDEX] == '_'){
 			if(INDEX < INPUT_STRING.size())
 				INDEX++;
 			check = true;
 		}
-		int END_INDEX = INDEX - 1;
+		unsigned int END_INDEX = INDEX - 1;
 		string TEMP_STRING;
 		if(check == true){
-			for(int i=START_INDEX; i<=END_INDEX; i++)
+			for(unsigned int i=START_INDEX; i<=END_INDEX; i++)
 				TEMP_STRING.push_back(INPUT_STRING[i]);
 			if(get_second_word(TEMP_STRING)){
 				TEMP_STRING.push_back(' ');
@@ -50,6 +53,7 @@ void Parser::lex(string INPUT_STRING) {
 				}
 					
 			}
+			cout<<TEMP_STRING<<" \n";
 			add_token(get_token(TEMP_STRING), TEMP_STRING);
 		}
 		else{	
@@ -58,42 +62,52 @@ void Parser::lex(string INPUT_STRING) {
 				case '<':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '='){
-						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1])
+						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
 						add_token(LEQ, SWITCH_STRING);
+						INDEX++;
 					}
 					else if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '-'){
-						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1])
+						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
 						add_token(LARROW, SWITCH_STRING);
+						INDEX++;
 					}
 					else
 						add_token(LESS, SWITCH_STRING);
 					break;
 				case '(':
-					add_token(LPAREN,string(INPUT_STRING[INDEX]));
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					add_token(LPAREN, SWITCH_STRING);
 					break;
 				case ')':
-					add_token(RPAREN,string(INPUT_STRING[INDEX]));
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					add_token(RPAREN, SWITCH_STRING);
 					break;
 				case '+':
-					add_token(PLUS,string(INPUT_STRING[INDEX]));
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					add_token(PLUS, SWITCH_STRING);
 					break;
 				case '-':
-					add_token(MINUS,string(INPUT_STRING[INDEX]));
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					add_token(MINUS, SWITCH_STRING);
 					break;
 				case '*':
-					add_token(TIMES,string(INPUT_STRING[INDEX]));
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					add_token(TIMES, SWITCH_STRING);
 					break;
 				case ',':
-					add_token(COMMA,string(INPUT_STRING[INDEX]));
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					add_token(COMMA, SWITCH_STRING);
 					break;
 				case ';':
-					add_token(SEMICOLON,string(INPUT_STRING[INDEX]));
+					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
+					add_token(SEMICOLON, SWITCH_STRING);
 					break;
 				case '=':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '='){
-						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1])
+						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
 						add_token(EQ,SWITCH_STRING);
+						INDEX++;
 					}
 					else
 						add_token(EQUALS, SWITCH_STRING);
@@ -101,8 +115,9 @@ void Parser::lex(string INPUT_STRING) {
 				case '!':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX +1] == '='){
-						SWTICH_STRING.push_back(INPUT_STRING[INDEX+1])
+						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
 						add_token(NEQ, SWITCH_STRING);
+						INDEX++;
 					}
 					else
 						throw runtime_error("Invalid char after '!'");
@@ -110,8 +125,9 @@ void Parser::lex(string INPUT_STRING) {
 				case '>':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '='){
-						SWTICH_STRING.push_back(INPUT_STRING[INDEX+1]);
+						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
 						add_token(GEQ,SWITCH_STRING);
+						INDEX++;
 					}
 					else
 						add_token(GREATER, SWITCH_STRING);
@@ -120,7 +136,8 @@ void Parser::lex(string INPUT_STRING) {
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '|'){
 						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
-						add_token(OR,SWTICH_STRING);
+						add_token(OR,SWITCH_STRING);
+						INDEX++;
 					}
 					else
 						throw runtime_error("Invalid char after '|'");
@@ -129,7 +146,8 @@ void Parser::lex(string INPUT_STRING) {
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					if(INDEX+1 < INPUT_STRING.size() && INPUT_STRING[INDEX+1] == '&'){
 						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
-						add_token(AND,SWTICH_STRING);
+						add_token(AND,SWITCH_STRING);
+						INDEX++;
 					}
 					else
 						throw runtime_error("Invalid char after '&'");
@@ -146,9 +164,10 @@ void Parser::lex(string INPUT_STRING) {
 						add_token(LITERAL, SWITCH_STRING);
 
 					break;
-				case ' ':
+				case ' ': case '\n':
 					break;
 				default:
+					//cout<<INPUT_STRING[INDEX]<<endl;
 					throw runtime_error("Invalid token");
 					break;
 			}
@@ -169,7 +188,7 @@ bool Parser::get_second_word(string FIRST_WORD){
 		return(false);
 }
 
-Token Parser::get_token(string s){
+Parser::Token Parser::get_token(string s){
 	if(s == "select")
 		return SELECT;
 	else if(s == "project")
@@ -206,7 +225,7 @@ Token Parser::get_token(string s){
 		return VARCHAR;
 	else if(s == "INTEGER")
 		return INTEGER_SYM;
-	else if(string(stoi(s)) == s)
+	else if(isdigit(s[0]))			///to_string(stoi(s)) == s
 		return INTEGER;
 	else if(isalpha(s[0]))
 		return IDENTIFIER;
@@ -237,6 +256,7 @@ int Parser::expect(Token t, string error) {
 }
 
 void Parser::parse() {
+	current_index = 0;
 	query();
 	command();
 }
@@ -271,8 +291,10 @@ void Parser::command() {
 		expect(LPAREN, "create table: expected '('");
 		typed_attribute_list();
 		expect(RPAREN, "create table: expected ')'");
-		expect(WHERE, "create table: expected 'WHERE'");
-		condition();
+		expect(PRIMARY_KEY, "create table: expected 'PRIMARY KEY'");
+		expect(LPAREN, "create table: expected '('");
+		attribute_list();
+		expect(RPAREN, "create table: expected ')'");
 	}
 	else if(accept(UPDATE)) {
 		expect(IDENTIFIER, "update: expected identifier");
@@ -434,7 +456,7 @@ void Parser::type() {
 		expect(INTEGER, "VARCHAR: expected integer");
 		expect(RPAREN, "VARCHAR: expected ')'");
 	}
-	else if(accept(INTEGER)) {
+	else if(accept(INTEGER_SYM)) {
 
 	}
 	else
