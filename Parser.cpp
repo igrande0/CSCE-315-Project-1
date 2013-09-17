@@ -19,7 +19,6 @@ void Parser::execute(string input) {
 void Parser::lex(string INPUT_STRING) {
 	raw_data.clear();
 	tokens.clear();
-	//cout << "-----------------------------------------------------------------------------\n";
 	for(unsigned int INDEX = 0; INDEX<INPUT_STRING.size();){
 		unsigned int START_INDEX = INDEX;
 		bool check = false;
@@ -54,7 +53,7 @@ void Parser::lex(string INPUT_STRING) {
 					
 			}
 			add_token(get_token(TEMP_STRING), TEMP_STRING);
-			//cout << raw_data[raw_data.size()-1] << "   |   ";
+			cout << '[' << TEMP_STRING << ']';
 		}
 		else{	
 			string SWITCH_STRING;
@@ -73,34 +72,42 @@ void Parser::lex(string INPUT_STRING) {
 					}
 					else
 						add_token(LESS, SWITCH_STRING);
+					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '(':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(LPAREN, SWITCH_STRING);
+					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case ')':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(RPAREN, SWITCH_STRING);
+					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '+':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(PLUS, SWITCH_STRING);
+					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '-':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(MINUS, SWITCH_STRING);
+					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '*':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(TIMES, SWITCH_STRING);
+					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case ',':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(COMMA, SWITCH_STRING);
+					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case ';':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(SEMICOLON, SWITCH_STRING);
+					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '=':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
@@ -111,6 +118,7 @@ void Parser::lex(string INPUT_STRING) {
 					}
 					else
 						add_token(EQUALS, SWITCH_STRING);
+					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '!':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
@@ -118,6 +126,7 @@ void Parser::lex(string INPUT_STRING) {
 						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
 						add_token(NEQ, SWITCH_STRING);
 						INDEX++;
+						cout << '[' << SWITCH_STRING << ']';
 					}
 					else
 						throw runtime_error("Invalid char after '!'");
@@ -131,6 +140,7 @@ void Parser::lex(string INPUT_STRING) {
 					}
 					else
 						add_token(GREATER, SWITCH_STRING);
+					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '|':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
@@ -138,6 +148,7 @@ void Parser::lex(string INPUT_STRING) {
 						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
 						add_token(OR,SWITCH_STRING);
 						INDEX++;
+						cout << '[' << SWITCH_STRING << ']';
 					}
 					else
 						throw runtime_error("Invalid char after '|'");
@@ -148,6 +159,7 @@ void Parser::lex(string INPUT_STRING) {
 						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
 						add_token(AND,SWITCH_STRING);
 						INDEX++;
+						cout << '[' << SWITCH_STRING << ']';
 					}
 					else
 						throw runtime_error("Invalid char after '&'");
@@ -160,8 +172,10 @@ void Parser::lex(string INPUT_STRING) {
 					}
 					if(INPUT_STRING[INDEX] != '"')
 						throw runtime_error("Expected end of quotations");
-					else
+					else {
 						add_token(LITERAL, SWITCH_STRING);
+						cout << "[\"" << SWITCH_STRING << "\"]";
+					}
 
 					break;
 				case ' ': case '\n': case '\r':
