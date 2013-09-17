@@ -40,8 +40,8 @@ private:
 	int accept(Token);
 	int expect(Token, string error);
 
-	void query();
-	void command();
+	bool query();
+	bool command();
 	void expression();
 	void atomic_expr();
 

@@ -9,7 +9,9 @@ using namespace std;
 
 void Parser::execute(string input) {
 	lex(input);
+	cout << "\n\nPARSER:\n";
 	parse();
+	cout << "input successfully  parsed";
 }
 
 /*------------------------------------------------------------------------------------*/
@@ -272,20 +274,21 @@ int Parser::expect(Token t, string error) {
 
 void Parser::parse() {
 	current_index = 0;
-	query();
-	command();
+	if(!query() && !command())
+		throw runtime_error("parser: unexpected symbol");
 }
 
 
-void Parser::query() {
+bool Parser::query() {
 	if(!accept(IDENTIFIER))
-		return; // not a query
+		return false; // not a query
 	expect(LARROW, "query: expected left arrow");
 	expression();
 	expect(SEMICOLON, "query: expected semicolon");
+	return true;
 }
 
-void Parser::command() {
+bool Parser::command() {
 	if(accept(OPEN)) {
 		expect(IDENTIFIER, "open: expected identifier");
 	}
@@ -350,8 +353,9 @@ void Parser::command() {
 		condition();
 	}
 	else 
-		throw runtime_error("parser: unexpected symbol");
+		return false;
 	expect(SEMICOLON, "query: expected semicolon");
+	return true;
 }
 
 void Parser::expression() {
@@ -361,13 +365,15 @@ void Parser::expression() {
 		projection();
 	else if(accept(RENAME))
 		renaming();
-	atomic_expr();
-	if(accept(PLUS)) 
+	else {
 		atomic_expr();
-	else if(accept(MINUS)) 
-		atomic_expr();
-	else if(accept(TIMES)) 
-		atomic_expr();
+		if(accept(PLUS)) 
+			atomic_expr();
+		else if(accept(MINUS)) 
+			atomic_expr();
+		else if(accept(TIMES)) 
+			atomic_expr();
+	}
 }
 
 void Parser::atomic_expr() {
@@ -432,6 +438,9 @@ void Parser::operand() {
 
 	}
 	else if(accept(LITERAL)) {
+
+	}
+	else if(accept(INTEGER)) {
 
 	}
 	else

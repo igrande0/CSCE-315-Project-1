@@ -11,7 +11,6 @@ int main() {
 			p.execute(line);
 		}
 		catch(exception& e){
-			cerr << endl;
 			cerr << "error: " << e.what() <<endl;
 		}
 		cout << "\n\n\n---------------------------------------------------------------\n";
