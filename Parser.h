@@ -27,6 +27,19 @@ public:
 		// LITERAL - "(any amount of characters)"
 		INTEGER, IDENTIFIER, LITERAL
 	};
+	const char* token_strings [39] = {
+		// symbols
+		"LARROW", "LPAREN", "RPAREN", "PLUS", "MINUS", "TIMES", "COMMA", "SEMICOLON", "EQUALS",
+		"EQ", "NEQ", "LESS", "GREATER", "LEQ", "GEQ", "OR", "AND",
+		
+		// keywords
+		"SELECT", "PROJECT", "RENAME", "OPEN", "CLOSE", "WRITE", "EXIT", "SHOW",
+		"CREATE_TABLE", "PRIMARY_KEY", "UPDATE", "SET", "WHERE", "INSERT_INTO",
+		"VALUES_FROM", "VALUES_FROM_RELATION", "DELETE_FROM", "VARCHAR", "INTEGER_SYM",
+
+		// others
+		"INTEGER", "IDENTIFIER", "LITERAL"
+	};
 	void execute(string input);
 	string get_error();
 	bool get_second_word(string FIRST_WORD);

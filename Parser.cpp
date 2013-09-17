@@ -9,6 +9,9 @@ using namespace std;
 
 void Parser::execute(string input) {
 	lex(input);
+	cout << "\n\nTOKEN ENUMS:\n";
+	for(unsigned int i = 0; i < tokens.size(); ++i)
+		cout << '[' << token_strings[tokens[i]] << ']';
 	cout << "\n\nPARSER:\n";
 	parse();
 	cout << "input successfully  parsed";
@@ -354,7 +357,7 @@ bool Parser::command() {
 	}
 	else 
 		return false;
-	expect(SEMICOLON, "query: expected semicolon");
+	expect(SEMICOLON, "command: expected semicolon");
 	return true;
 }
 
@@ -403,9 +406,9 @@ void Parser::projection() {
 }
 
 void Parser::renaming() {
-	expect(LPAREN, "projection: expected '('");
+	expect(LPAREN, "remane: expected '('");
 	attribute_list();
-	expect(RPAREN, "projection: expected ')'");
+	expect(RPAREN, "rename: expected ')'");
 	atomic_expr();
 }
 
