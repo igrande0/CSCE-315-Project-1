@@ -213,6 +213,8 @@ Parser::Token Parser::get_token(string s){
 		return SELECT;
 	else if(s == "project")
 		return PROJECT;
+	else if(s== "rename")
+		return RENAME;
 	else if(s == "OPEN")
 		return OPEN;
 	else if(s == "CLOSE")
@@ -323,7 +325,14 @@ bool Parser::command() {
 		do {
 			expect(IDENTIFIER, "update: expected identifier");
 			expect(EQUALS, "update: expected '='");
-			expect(LITERAL, "update: expected literal");
+			if(accept(LITERAL)) {
+
+			}
+			else if(accept(INTEGER)) {
+
+			}
+			else
+				throw runtime_error("update: expected literal or integer");
 		} while (accept(COMMA));
 		expect(WHERE, "update: expected 'WHERE'");
 		condition();
@@ -338,6 +347,9 @@ bool Parser::command() {
 				}
 				else if(accept(INTEGER)) {
 				
+				}
+				else if(accept(MINUS)) {
+					expect(INTEGER, "insert into: expected integer");
 				}
 				else
 					throw runtime_error("insert into: unexpected symbol");
@@ -406,7 +418,7 @@ void Parser::projection() {
 }
 
 void Parser::renaming() {
-	expect(LPAREN, "remane: expected '('");
+	expect(LPAREN, "renamee: expected '('");
 	attribute_list();
 	expect(RPAREN, "rename: expected ')'");
 	atomic_expr();
