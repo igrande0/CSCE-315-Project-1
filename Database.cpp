@@ -416,3 +416,8 @@ int Database::get_attribute_index(int table_type, int table_index, string attrib
 	}
 	return COLUMN_INDEX;
 }
+
+void erase_view(string view_name){
+	int VIEW_INDEX = get_view_index(view_name);
+	VIEW_LIST.erase(VIEW_LIST.begin() + VIEW_INDEX);
+}
