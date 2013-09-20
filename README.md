@@ -1,6 +1,6 @@
 CSCE 315 Project 1
 ==================
-Fully working DBMS engine.
+Fully working DML parser.
 
-Compile in UNIX with "make."
-Run the "dbtest" executable.
+To test the code, run the command "sh testparser.sh" in UNIX.
+The program will take input from input.txt and direct all output to output.txt.
