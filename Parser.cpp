@@ -418,7 +418,7 @@ void Parser::projection() {
 }
 
 void Parser::renaming() {
-	expect(LPAREN, "renamee: expected '('");
+	expect(LPAREN, "rename: expected '('");
 	attribute_list();
 	expect(RPAREN, "rename: expected ')'");
 	atomic_expr();
