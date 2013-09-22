@@ -14,6 +14,8 @@
 
 void Database::select(string view_name, string in_table_name, int row_index){
 	bool VIEW_CHECK = true;
+
+	// check to see if view_name already exists
 	for(unsigned int i=0; i<VIEW_LIST.size(); i++)
 		if(VIEW_LIST[i][0][0] == view_name){
 			VIEW_CHECK = false;
