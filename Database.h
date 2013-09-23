@@ -18,19 +18,18 @@ private:
 	 * ...
 	 *
 	 * Attribute Types:
-	 * INT, INTEGER
-	 * FLOAT, REAL
-	 * CHAR(n)
+	 * INTEGER
 	 * VARCHAR(n)
-	 * DATE (data stored as yyyy-mm-dd)
-	 * TIME (data stored as hh:mm:ss)
 	 */
 
-	vector<vector<vector<string> > > RELATION_LIST;
-	vector<vector<vector<string> > > VIEW_LIST;
+	vector<vector<vector<string>>> RELATION_LIST;
+	vector<vector<vector<string>>> VIEW_LIST;
 
-	template <class T> bool compare(T left_arg, T right_arg, string comparison_op);
-	int extract_digits(string input);
+	enum TableType {
+		VIEW, RELATION
+	};
+
+	// Internal Utility Functions
 	void print_table(const vector<vector<string > >& table);
 	void write_table(string table_name, const vector<vector<string>>& TABLE);
 
@@ -45,6 +44,7 @@ public:
     
 	// Command Functions
 	void close(string table_name);
+	void exit();
 	void write(string table_name);
 	void open(string file_name);
 	void show(string table_name);
@@ -56,13 +56,10 @@ public:
 
 	// Utility Functions
 	int get_relation_index(string table_name);
-	int get_attribute_index(int table_type, int table_index, string attribute_name);
 	int get_view_index(string table_name);
-	bool compare(string attribute_type, string left_arg, string right_arg, string comparison_op);
-	void erase_view(string view_name);
-	void change_view_name(string new_name, string old_name);
-	vector<vector<string>> get_tuples(string table_name);
-	
+	int get_attribute_index(TableType type, int table_index, string attribute_name);
+	void update_view_name(string new_name, string old_name);
+	const vector<vector<string>>& get_table(string table_name);
 };
 
 #endif

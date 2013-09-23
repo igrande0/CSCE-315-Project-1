@@ -99,6 +99,8 @@ SHOW no_such_relation;
 bad_query <- project (t) points;
 dots_to_points <- rename (x2, y2, z2) dots;
 
+SHOW dots_to_points;
+
 UPDATE dots SET x1 = 0 WHERE x1 < 0;
 SHOW dots;
 

@@ -10,18 +10,30 @@
 
 using namespace std;
 
-void Parser::execute(string input) {
-	lex(input);
+bool Parser::execute(string input) {
+	bool ret_val = true;;
+	cout << "---------------------------------------------------------------\n";
+	cout << "\n\nINPUT: " << input << "\n\n";
+	try{
+		lex(input);
+		parse();
+	}
+	catch(exception& e) {
+		cout  << "error: " << e.what() << endl;
+		ret_val = false;
+	}
+	cout << "\n\nTOKENS:\n";
+	for(unsigned int i = 0; i < raw_data.size(); ++i)
+		cout << '[' << raw_data[i] << ']';
 	cout << "\n\nTOKEN ENUMS:\n";
 	for(unsigned int i = 0; i < tokens.size(); ++i)
 		cout << '[' << token_strings[tokens[i]] << ']';
-	cout << "\n\nPARSER:\n";
-	parse();
-	cout << "input successfully  parsed";
+	cout << "\n\n\n---------------------------------------------------------------\n";
+	return ret_val;
 }
 
 /*------------------------------------------------------------------------------------*/
-/* LEXER FUNCTIONS */
+/* LEXER */
 /*------------------------------------------------------------------------------------*/
 
 void Parser::lex(string INPUT_STRING) {
@@ -61,7 +73,6 @@ void Parser::lex(string INPUT_STRING) {
 					
 			}
 			add_token(get_token(TEMP_STRING), TEMP_STRING);
-			cout << '[' << TEMP_STRING << ']';
 		}
 		else{	
 			string SWITCH_STRING;
@@ -80,42 +91,34 @@ void Parser::lex(string INPUT_STRING) {
 					}
 					else
 						add_token(LESS, SWITCH_STRING);
-					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '(':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(LPAREN, SWITCH_STRING);
-					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case ')':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(RPAREN, SWITCH_STRING);
-					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '+':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(PLUS, SWITCH_STRING);
-					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '-':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(MINUS, SWITCH_STRING);
-					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '*':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(TIMES, SWITCH_STRING);
-					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case ',':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(COMMA, SWITCH_STRING);
-					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case ';':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
 					add_token(SEMICOLON, SWITCH_STRING);
-					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '=':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
@@ -126,7 +129,6 @@ void Parser::lex(string INPUT_STRING) {
 					}
 					else
 						add_token(EQUALS, SWITCH_STRING);
-					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '!':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
@@ -134,7 +136,6 @@ void Parser::lex(string INPUT_STRING) {
 						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
 						add_token(NEQ, SWITCH_STRING);
 						INDEX++;
-						cout << '[' << SWITCH_STRING << ']';
 					}
 					else
 						throw runtime_error("Invalid char after '!'");
@@ -148,7 +149,6 @@ void Parser::lex(string INPUT_STRING) {
 					}
 					else
 						add_token(GREATER, SWITCH_STRING);
-					cout << '[' << SWITCH_STRING << ']';
 					break;
 				case '|':
 					SWITCH_STRING.push_back(INPUT_STRING[INDEX]);
@@ -156,7 +156,6 @@ void Parser::lex(string INPUT_STRING) {
 						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
 						add_token(OR,SWITCH_STRING);
 						INDEX++;
-						cout << '[' << SWITCH_STRING << ']';
 					}
 					else
 						throw runtime_error("Invalid char after '|'");
@@ -167,7 +166,6 @@ void Parser::lex(string INPUT_STRING) {
 						SWITCH_STRING.push_back(INPUT_STRING[INDEX+1]);
 						add_token(AND,SWITCH_STRING);
 						INDEX++;
-						cout << '[' << SWITCH_STRING << ']';
 					}
 					else
 						throw runtime_error("Invalid char after '&'");
@@ -182,22 +180,23 @@ void Parser::lex(string INPUT_STRING) {
 						throw runtime_error("Expected end of quotations");
 					else {
 						add_token(LITERAL, SWITCH_STRING);
-						cout << "[\"" << SWITCH_STRING << "\"]";
 					}
 
 					break;
 				case ' ': case '\n': case '\r':
 					break;
 				default:
-					//cout<<INPUT_STRING[INDEX]<<endl;
 					throw runtime_error("Invalid token");
 					break;
 			}
 			INDEX++;
-			//cout << raw_data[raw_data.size()-1] << "   |   ";
 		}
 	}	
 }
+
+/*------------------------------------------------------------------------------------*/
+/* LEXER UTILITIES */
+/*------------------------------------------------------------------------------------*/
 
 void Parser::add_token(Token token, string s){
 	tokens.push_back(token);
@@ -205,7 +204,8 @@ void Parser::add_token(Token token, string s){
 }
 
 bool Parser::get_second_word(string FIRST_WORD){
-	if(FIRST_WORD == "CREATE" || FIRST_WORD == "PRIMARY" || FIRST_WORD == "INSERT" || FIRST_WORD == "VALUES" || FIRST_WORD == "DELETE")
+	if(FIRST_WORD == "CREATE" || FIRST_WORD == "PRIMARY"
+		|| FIRST_WORD == "INSERT" || FIRST_WORD == "VALUES" || FIRST_WORD == "DELETE")
 		return(true);
 	else
 		return(false);
@@ -258,14 +258,13 @@ Parser::Token Parser::get_token(string s){
 		throw runtime_error("Invalid token");
 }
 
-
-
-
 /*------------------------------------------------------------------------------------*/
-/* RECURSIVE DESCENT PARSER */
+/* PARSER RECURSIVE FUNCTIONS */
 /*------------------------------------------------------------------------------------*/
 
 int Parser::accept(Token t) {
+	if(current_index >= tokens.size())
+		throw runtime_error("parser: invalid input");
 	if(tokens[current_index] == t) {
 		++current_index;
 		return 1;
@@ -288,107 +287,223 @@ void Parser::parse() {
 
 
 bool Parser::query() {
+	string expected_name;
+	string anon_name;
+
 	if(!accept(IDENTIFIER))
 		return false; // not a query
+	expected_name = get_previous_data();
+
 	expect(LARROW, "query: expected left arrow");
-	expression();
+	anon_name = expression();
 	expect(SEMICOLON, "query: expected semicolon");
+
+	db.update_view_name(expected_name, anon_name);
 	return true;
 }
 
 bool Parser::command() {
-	if(accept(OPEN)) {
-		expect(IDENTIFIER, "open: expected identifier");
-		string file_name = get_previous_data();
-		ifstream INPUT_FILE;
-		INPUT_FILE.open(file_name + ".db");
-		if(!INPUT_FILE.is_open())
-			throw runtime_error("Open: file failed to open");
-		string NEW_LINE;
-		while(getline(INPUT_FILE, NEW_LINE))
-			execute(NEW_LINE);
-		INPUT_FILE.close();
-	}
-	else if(accept(CLOSE)) {
-		expect(IDENTIFIER, "close: expected identifier");
-	}
-	else if(accept(WRITE)) {
-		expect(IDENTIFIER, "write: expected identifier");
-	}
-	else if(accept(EXIT)) {
-
-	}
-	else if(accept(SHOW)) {
-		atomic_expr();
-	}
-	else if(accept(CREATE_TABLE)) {
-		expect(IDENTIFIER, "create table: expected identifier");
-		expect(LPAREN, "create table: expected '('");
-		typed_attribute_list();
-		expect(RPAREN, "create table: expected ')'");
-		expect(PRIMARY_KEY, "create table: expected 'PRIMARY KEY'");
-		expect(LPAREN, "create table: expected '('");
-		attribute_list();
-		expect(RPAREN, "create table: expected ')'");
-	}
-	else if(accept(UPDATE)) {
-		expect(IDENTIFIER, "update: expected identifier");
-		expect(SET, "update: expected 'SET'");
-		do {
-			expect(IDENTIFIER, "update: expected identifier");
-			expect(EQUALS, "update: expected '='");
-			if(accept(LITERAL)) {
-
-			}
-			else if(accept(INTEGER)) {
-
-			}
-			else
-				throw runtime_error("update: expected literal or integer");
-		} while (accept(COMMA));
-		expect(WHERE, "update: expected 'WHERE'");
-		condition();
-	}
-	else if(accept(INSERT_INTO)) {
-		expect(IDENTIFIER, "insert into: expected identifier");
-		if(accept(VALUES_FROM)) {
-			expect(LPAREN, "insert into: expected '('");
-			do {
-				if(accept(LITERAL)) {
-				
-				}
-				else if(accept(INTEGER)) {
-				
-				}
-				else if(accept(MINUS)) {
-					expect(INTEGER, "insert into: expected integer");
-				}
-				else
-					throw runtime_error("insert into: unexpected symbol");
-			} while(accept(COMMA));
-			expect(RPAREN, "insert into: expected ')'");
-		}
-		else if(accept(VALUES_FROM_RELATION)) {
-			expression();
-		}
-		else
-			throw runtime_error("insert into: unexpected symbol");
-	}
-	else if(accept(DELETE_FROM)) {
-		expect(IDENTIFIER, "delete from: expected identifier");
-		expect(WHERE, "delete from: expected 'WHERE'");
-		condition();
-	}
+	if(accept(OPEN))
+		open();
+	else if(accept(CLOSE)) 
+		close();
+	else if(accept(WRITE)) 
+		write();
+	else if(accept(EXIT))
+		db.exit();
+	else if(accept(SHOW))
+		show();
+	else if(accept(CREATE_TABLE))
+		create_table();
+	else if(accept(UPDATE))
+		update();
+	else if(accept(INSERT_INTO)) 
+		insert_into();
+	else if(accept(DELETE_FROM))
+		delete_from();
 	else 
 		return false;
-	expect(SEMICOLON, "command: expected semicolon");
 	return true;
 }
 
+/* ----------------------------Command Functions---------------------------*/
+
+void Parser::open() {
+	expect(IDENTIFIER, "open: expected identifier");
+	string file_name = get_previous_data();
+	expect(SEMICOLON, "command: expected semicolon");
+
+	ifstream INPUT_FILE;
+	INPUT_FILE.open(file_name + ".db");
+	if(!INPUT_FILE.is_open())
+		throw runtime_error("Open: file failed to open");
+
+	vector<Token> old_tokens = tokens;
+	vector<string> old_raw_data = raw_data;
+
+	cout << "===============================================================\n";
+	string NEW_LINE;
+	getline(INPUT_FILE, NEW_LINE);
+	if(execute(NEW_LINE) == false) {
+		INPUT_FILE.close();
+		tokens = old_tokens;
+		raw_data = old_raw_data;
+		throw runtime_error("open: relation is already open");
+	}
+	
+	while(!INPUT_FILE.eof()) {
+		getline(INPUT_FILE, NEW_LINE);
+		execute(NEW_LINE);
+	}
+	cout << "===============================================================\n";
+	INPUT_FILE.close();
+
+	tokens = old_tokens;
+	raw_data = old_raw_data;
+}
+
+void Parser::close() {
+	expect(IDENTIFIER, "close: expected identifier");
+	string table_name = get_previous_data();
+	expect(SEMICOLON, "command: expected semicolon");
+	db.close(table_name);
+}
+
+void Parser::write() {
+	expect(IDENTIFIER, "write: expected identifier");
+	string table_name = get_previous_data();
+	expect(SEMICOLON, "command: expected semicolon");
+	db.write(table_name);
+}
+
+void Parser::show() {
+	string table_name = atomic_expr();
+	expect(SEMICOLON, "command: expected semicolon");
+	db.show(table_name);
+}
+
+void Parser::create_table() {
+	pair<vector<string>, vector<string> > attributes_types;
+	vector<string> keys;
+	string table_name;
+
+	expect(IDENTIFIER, "create table: expected identifier");
+	table_name = get_previous_data();
+
+	expect(LPAREN, "create table: expected '('");
+	attributes_types = typed_attribute_list();
+	expect(RPAREN, "create table: expected ')'");
+
+
+	expect(PRIMARY_KEY, "create table: expected 'PRIMARY KEY'");
+	expect(LPAREN, "create table: expected '('");
+	keys = attribute_list();
+	expect(RPAREN, "create table: expected ')'");
+	
+	expect(SEMICOLON, "command: expected semicolon");
+	db.create(table_name, attributes_types.first, attributes_types.second, keys);
+}
+
+void Parser::update() {
+	string table_name;
+	vector<string> attribute_names;
+	vector<string> new_values;
+	vector<Token> type;
+	vector<vector<string> > table;
+	vector<bool> truth_values;
+
+	expect(IDENTIFIER, "update: expected identifier");
+	table_name = get_previous_data();
+
+	expect(SET, "update: expected 'SET'");
+	do {
+		expect(IDENTIFIER, "update: expected identifier");
+		attribute_names.push_back(get_previous_data());
+
+		expect(EQUALS, "update: expected '='");
+		if(accept(LITERAL)) {
+			type.push_back(LITERAL);
+			new_values.push_back(get_previous_data());
+		}
+		else if(accept(INTEGER)) {
+			type.push_back(INTEGER);
+			new_values.push_back(get_previous_data());
+		}
+		else
+			throw runtime_error("update: expected literal or integer");
+	} while (accept(COMMA));
+
+	table = db.get_table(table_name);
+	expect(WHERE, "update: expected 'WHERE'");
+	truth_values = condition(table);
+
+	expect(SEMICOLON, "command: expected semicolon");
+
+	for(unsigned int i = 0; i < truth_values.size(); ++i) 
+		if(truth_values[i] == true)
+			db.update(table_name, attribute_names, new_values, i + 3);
+}
+
+void Parser::insert_into() {
+	string relation_name;
+
+	expect(IDENTIFIER, "insert into: expected identifier");
+	relation_name = get_previous_data();
+
+	if(accept(VALUES_FROM)) {
+		vector<string> tuple;
+
+		expect(LPAREN, "insert into: expected '('");
+		do {
+			if(accept(LITERAL))
+				tuple.push_back(get_previous_data());
+			else if(accept(INTEGER))
+				tuple.push_back(get_previous_data());
+			else if(accept(MINUS)) {
+				expect(INTEGER, "insert into: expected integer");
+				string value = "-";
+				value += get_previous_data();
+				tuple.push_back(value);
+			}
+			else
+				throw runtime_error("insert into: unexpected symbol");
+		} while(accept(COMMA));
+		expect(RPAREN, "insert into: expected ')'");
+		expect(SEMICOLON, "command: expected semicolon");
+		db.insert_tuple(relation_name, tuple);
+	}
+	else if(accept(VALUES_FROM_RELATION)) {
+		string view_name = expression();
+		expect(SEMICOLON, "command: expected semicolon");
+		db.insert_view(relation_name, view_name);
+	}
+	else
+		throw runtime_error("insert into: unexpected symbol");
+}
+
+void Parser::delete_from() {
+	string relation_name;
+	vector<bool> truth_values;
+	unsigned int vector_offset = 3;
+
+	expect(IDENTIFIER, "delete from: expected identifier");
+	relation_name = get_previous_data();
+	const vector<vector<string> >& table = db.get_table(relation_name);
+
+	expect(WHERE, "delete from: expected 'WHERE'");
+	truth_values = condition(table);
+
+	for(unsigned int i = 0; i < truth_values.size(); ++i)
+		if(truth_values[i] == true) {
+			db.remove(relation_name, i + vector_offset);
+			--vector_offset;
+		}
+}
+
+/* -------------------------------Expressions------------------------------*/
+
 string Parser::expression() {
 	string view_name;
-	string left_argument;
-	string right_argument;
 
 	if(accept(SELECT)) 
 		view_name = selection();
@@ -398,30 +513,12 @@ string Parser::expression() {
 		view_name = renaming();
 	else {
 		view_name = atomic_expr();
-
-		if(accept(PLUS)) {
-			left_argument = view_name;
-			view_name = get_anonymous_view();
-			right_argument = atomic_expr(); 
-
-			db.set_union(view_name, left_argument, right_argument);
-		}
-
-		else if(accept(MINUS)) {
-			left_argument = view_name;
-			view_name = get_anonymous_view();
-			right_argument = atomic_expr(); 
-
-			db.set_difference(view_name, left_argument, right_argument);
-		}
-
-		else if(accept(TIMES)) {
-			left_argument = view_name;
-			view_name = get_anonymous_view();
-			right_argument = atomic_expr(); 
-
-			db.cross_product(view_name, left_argument, right_argument);
-		}
+		if(accept(PLUS))
+			view_name = set_union(view_name);
+		else if(accept(MINUS))
+			view_name = set_difference(view_name);
+		else if(accept(TIMES))
+			view_name = cross_product(view_name);
 	}
 
 	return view_name;
@@ -443,15 +540,34 @@ string Parser::atomic_expr() {
 	return view_name;
 }
 
+/* -----------------------------Query Functions----------------------------*/
+
 string Parser::selection() {
 	string view_name = get_anonymous_view();
 	string in_table_name;
+	int begin_condition;
+	int after_atomic;
+	vector<bool> truth_values;
 
+	// first parse the condition without executing any comparisons
 	expect(LPAREN, "selection: expected '('");
+	begin_condition = current_index;
 	condition();
 	expect(RPAREN, "selection: expected ')'");
 	in_table_name = atomic_expr();
+	after_atomic = current_index;
 
+	// now re-parse the condition while doing all comparisons
+	current_index = begin_condition;
+	const vector<vector<string> >& table = db.get_table(in_table_name);
+	truth_values = condition(table);
+	
+	// call select on every index
+	for(unsigned int i = 0; i < truth_values.size(); ++i)
+		if(truth_values[i] == true)
+			db.select(view_name, in_table_name, i+3);
+
+	current_index = after_atomic;
 	return view_name;
 }
 
@@ -485,83 +601,185 @@ string Parser::renaming() {
 	return view_name;
 }
 
-vector<bool> Parser::condition(vector<vector<string> > tuples) {
-	vector<bool> values(tuples.size(), false);
+string Parser::set_union(string left_argument) {
+	string view_name = get_anonymous_view();
+	string right_argument = atomic_expr(); 
 
+	db.set_union(view_name, left_argument, right_argument);
+
+	return view_name;
+}
+
+string Parser::set_difference(string left_argument) {
+	string view_name = get_anonymous_view();
+	string right_argument = atomic_expr(); 
+
+	db.set_difference(view_name, left_argument, right_argument);
+
+	return view_name;
+}
+
+string Parser::cross_product(string left_argument) {
+	string view_name = get_anonymous_view();
+	string right_argument = atomic_expr(); 
+
+	db.cross_product(view_name, left_argument, right_argument);
+
+	return view_name;
+}
+
+/* -------------------------Conditional Statements------------------------*/
+
+vector<bool> Parser::condition(const vector<vector<string> >& table) {
+	vector<bool> values;
+	if(table.size() > 2) {
+		vector<bool> initializer(table.size()-3, false);
+		values = initializer;
+	}
+	
 	do {
-		vector<bool> new_values = conjunction(tuples);
-		for(unsigned int i = 0; i < values.size(); ++i) 
+		vector<bool> new_values = conjunction(table);
+		for(unsigned int i = 0; i < values.size() && i < new_values.size(); ++i) 
 			values[i] = values[i] || new_values[i];
 	} while(accept(OR));
-
+	
 	return values;
 }
 
-vector<bool> Parser::conjunction(vector<vector<string> > tuples) {
-	vector<bool> values(tuples.size(), true);
+vector<bool> Parser::conjunction(const vector<vector<string> >& table) {
+	vector<bool> values;
+	if(table.size() > 2) {
+		vector<bool> initializer(table.size()-3, true);
+		values = initializer;
+	}
 	
 	do {
-		vector<bool> new_values = conjunction(tuples);
-		for(unsigned int i = 0; i < values.size(); ++i) 
+		vector<bool> new_values = comparison(table);
+		for(unsigned int i = 0; i < values.size() && i < new_values.size(); ++i) 
 			values[i] = values[i] && new_values[i];
 	} while(accept(AND));
 
 	return values;
 }
 
-vector<bool> Parser::comparison(vector<vector<string> > tuples) {
-	vector<bool> values(tuples.size());
+vector<bool> Parser::comparison(const vector<vector<string> >& table) {
+	vector<bool> values;
+	if(table.size() > 2) {
+		vector<bool> initializer(table.size()-3);
+		values = initializer;
+	}
 
 	if(accept(LPAREN)) {
-		if(tuples.size() == 0)
-			values = condition();
+		values = condition(table);
 		expect(RPAREN, "comparison: expected ')'");
 	}
 	else {
-		operand();
-		op();
-		operand();
+		expect(IDENTIFIER, "comparison: left operand: expected identifier");
+		string left_arg = get_previous_data();
+
+		Token op = get_current_token();
+		if(!(accept(EQ) || accept(NEQ) || accept(GREATER) || accept(LESS) || accept(LEQ) || accept(GEQ)))
+			throw runtime_error("op: unexpected operator");
+
+		Token right_arg_type = get_current_token();
+		if(!(accept(IDENTIFIER) || accept(LITERAL) || accept(INTEGER)))
+			throw runtime_error("comparison: right operand: unexpected operand");
+		string right_arg = get_previous_data();
+		
+		if(table.size() > 2) {
+			// get first attribute index
+			int attribute_index1 = -1;
+			Token attribute_index1_type;
+			for(unsigned int i = 0; i < table[1].size(); ++i)
+				if(table[1][i] == left_arg) {
+					attribute_index1 = i;
+					string type = table[2][i];
+					switch(type[0]) {
+						case 'I':
+							attribute_index1_type = INTEGER;
+							break;
+						case 'V':
+							attribute_index1_type = VARCHAR;
+							break;
+					}
+					break;
+				}
+			if(attribute_index1 == -1)
+				throw runtime_error("comparison: left operand: no such attribute");
+
+			switch(right_arg_type) {
+				case IDENTIFIER: {
+					// get second attribute index
+					int attribute_index2 = -1;
+					Token attribute_index2_type;
+					for(unsigned int i = 0; i < table[1].size(); ++i)
+						if(table[1][i] == right_arg) {
+							attribute_index2 = i;
+							string type = table[2][i];
+							switch(type[0]) {
+								case 'I':
+									attribute_index2_type = INTEGER;
+									break;
+								case 'V':
+									attribute_index2_type = VARCHAR;
+									break;
+							}
+							break;
+						}
+					if(attribute_index2 == -1)
+						throw runtime_error("comparison: right operand: no such attribute");
+
+					if(attribute_index1_type != attribute_index2_type)
+						throw runtime_error("comparison: incompatible attribute types");
+				
+					// do comparisons on all tuples
+					if(attribute_index1_type == INTEGER)
+						for(unsigned int i = 3; i < table.size(); ++i) {
+							int left = stoi(table[i][attribute_index1]);
+							int right = stoi(table[i][attribute_index2]);
+							values[i-3] = compare<int>(left, right, op);
+						}
+					else if(attribute_index1_type == VARCHAR)
+						for(unsigned int i = 3; i < table.size(); ++i) {
+							string left = table[i][attribute_index1];
+							string right = table[i][attribute_index2];
+							values[i-3] = compare<string>(left, right, op);
+						}
+					else
+						throw runtime_error("comparison: argument types: unexpected error");
+
+					break;
+				}
+				case LITERAL: {
+					if(attribute_index1_type != VARCHAR)
+						throw runtime_error("comparison: incompatible arguments");
+
+					for(unsigned int i = 3; i < table.size(); ++i) 
+						values[i-3] = compare<string>(table[i][attribute_index1], right_arg, op);
+					break;
+				}
+				case INTEGER: {
+					if(attribute_index1_type != INTEGER)
+						throw runtime_error("comparison: incompatible arguments");
+
+					for(unsigned int i = 3; i < table.size(); ++i) {
+						int left = stoi(table[i][attribute_index1]);
+						int right = stoi(right_arg);
+						values[i-3] = compare<int>(left, right, op);
+					}
+					break;
+				}
+				default:
+					throw runtime_error("comparison: unexpected error");
+					break;
+			}
+		}
 	}
 
 	return values;
 }
 
-void Parser::operand() {
-	if(accept(IDENTIFIER)) {
-
-	}
-	else if(accept(LITERAL)) {
-
-	}
-	else if(accept(INTEGER)) {
-
-	}
-	else
-		throw runtime_error("operand: unexpected operand");
-}
-
-void Parser::op() {
-	if(accept(EQ)) {
-
-	}
-	else if(accept(NEQ)) {
-
-	}
-	else if(accept(GREATER)) {
-
-	}
-	else if(accept(LESS)) {
-
-	}
-	else if(accept(LEQ)) {
-
-	}
-	else if(accept(GEQ)) {
-
-	}
-	else
-		throw runtime_error("op: unexpected operator");
-}
+/* ----------------------------   Lists   ---------------------------*/
 
 vector<string> Parser::attribute_list() {
 	vector<string> attributes;
@@ -592,6 +810,8 @@ pair<vector<string>, vector<string> > Parser::typed_attribute_list() {
 string Parser::type() {
 	string type;
 	if(accept(VARCHAR)) {
+		type += get_previous_data();
+
 		expect(LPAREN, "VARCHAR: expected '('");
 		type += get_previous_data();
 
@@ -607,6 +827,44 @@ string Parser::type() {
 	else
 		throw runtime_error("type: unexpected symbol");
 	return type;
+}
+
+/*------------------------------------------------------------------------------------*/
+/* PARSER UTILITIES */
+/*------------------------------------------------------------------------------------*/
+
+template <class T> bool Parser::compare(T left_arg, T right_arg, Token op) {
+	bool ret_val;
+	
+	switch(op) {
+		case EQ:
+			ret_val = left_arg == right_arg;
+			break;
+		case NEQ:
+			ret_val = left_arg != right_arg;
+			break;
+		case LESS:
+			ret_val = left_arg < right_arg;
+			break;
+		case GREATER:
+			ret_val = left_arg > right_arg;
+			break;
+		case GEQ:
+			ret_val = left_arg >= right_arg;
+			break;
+		case LEQ:
+			ret_val = left_arg <= right_arg;
+			break;
+		default:
+			throw runtime_error("compare: unexpected error");
+			break;
+	}
+	
+	return ret_val;
+}
+
+Parser::Token Parser::get_current_token() {
+	return tokens[current_index];
 }
 
 string Parser::get_previous_data() {

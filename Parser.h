@@ -43,14 +43,19 @@ public:
 		// others
 		"INTEGER", "IDENTIFIER", "LITERAL"
 	};
-	void execute(string input);
+	bool execute(string input);
+	
+
+private:
+	/*------------------- LEXER FUNCTIONS -------------------*/
+	void lex(string input);
+
+	// Lexer Utilities
 	bool get_second_word(string FIRST_WORD);
 	void add_token(Token token, string s);
 	Token get_token(string s);
 
-private:
-	// Parser functions
-	void lex(string input);
+	/*-------------- PARSER RECURSIVE FUNCTIONS --------------*/
 	void parse();
 
 	int accept(Token);
@@ -58,32 +63,50 @@ private:
 
 	bool query();
 	bool command();
+
+	// Command Functions
+	void open();
+	void close();
+	void write();
+	void show();
+	void create_table();
+	void update();
+	void insert_into();
+	void delete_from();
+
+	// Expressions
 	string expression();
 	string atomic_expr();
 
+	// Query Functions
 	string selection();
 	string projection();
 	string renaming();
+	string set_union(string left_argument);
+	string set_difference(string left_argument);
+	string cross_product(string left_argument);
 
-	vector<bool> condition(vector<vector<string> > tuples = vector<vector<string> >());
-	vector<bool> conjunction(vector<vector<string> > tuples = vector<vector<string> >());
-	vector<bool> comparison(vector<vector<string> > tuples = vector<vector<string> >());
-	void op();
-	void operand();
+	// Conditional Statements
+	vector<bool> condition(const vector<vector<string> >& table = vector<vector<string> >());
+	vector<bool> conjunction(const vector<vector<string> >& table = vector<vector<string> >());
+	vector<bool> comparison(const vector<vector<string> >& table = vector<vector<string> >());
 
+	// Lists
 	vector<string> attribute_list();
 	pair<vector<string>, vector<string> > typed_attribute_list();
 	string type();
 
-	// Uitilities
+	/*----------------- PARSER UTILITIES -----------------*/
+	template <class T> bool compare(T left_arg, T right_arg, Token op);
 	string get_previous_data();
 	string get_anonymous_view();
+	Token get_current_token();
 
-	// Data
+	/*-------------------- PARSER DATA -------------------*/
 	vector<Token> tokens;
 	vector<string> raw_data;
 
-	int current_index = 0;
+	unsigned int current_index = 0;
 	int current_anon_view = 0;
 
 	Database db;
