@@ -438,12 +438,14 @@ void Database::insert_tuple(string relation_name, vector<string> tuple){
 void Database::insert_view(string relation_name, string view_name){
 	int view_index = -1;
 	int relation_index = -1;
-	for(unsigned int i=0; i<)
+
+	//for(unsigned int i=0; i<)
+
 	if((view_index = get_view_index(view_name)) == -1)
-		throw runtime_error("Insert View: view name does not exist"); // RETURN ERROR
+		throw runtime_error("Insert View: view name does not exist"); 
 
 	if((relation_index = get_relation_index(relation_name)) == -1)
-		throw runtime_error("Insert View: relation table does not exist"); // RETURN ERROR
+		throw runtime_error("Insert View: relation table does not exist");
 	//for(unsigned int i=0; i<VIEW_LIST[view_index].size(); i+)
 		//needs to be completed - JM
 
