@@ -77,6 +77,8 @@ void Database::select(string view_name, string in_table_name, int row_index){
 			VIEW_LIST[VIEW_INDEX].push_back(VIEW_LIST[V_INDEX][row_index]);
 		}
 	}
+	else
+		throw runtime_error("Select: no such table name exists");
 }
 
 void Database::project(string view_name, string in_table_name, vector<string> attributes){
@@ -458,4 +460,12 @@ int Database::get_attribute_index(int table_type, int table_index, string attrib
 void Database::erase_view(string view_name){
 	int VIEW_INDEX = get_view_index(view_name);
 	VIEW_LIST.erase(VIEW_LIST.begin() + VIEW_INDEX);
+}
+
+void Database::change_view_name(string new_name, string old_name){
+	int VIEW_INDEX = get_view_index(old_name);
+	if(VIEW_INDEX == -1)
+		throw runtime_error("Change View Name: No such table exists");
+	else
+		VIEW_LIST[VIEW_INDEX][0][0] = new_name;
 }

@@ -58,6 +58,7 @@ public:
 	int get_view_index(string table_name);
 	bool compare(string attribute_type, string left_arg, string right_arg, string comparison_op);
 	void erase_view(string view_name);
+	void change_view_name(string new_name, string old_name);
 };
 
 #endif
