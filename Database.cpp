@@ -3,6 +3,7 @@
 #include <cctype>
 #include <iostream>
 #include <iomanip>
+#include <stdexcept>
 
 #define RELATION 0
 #define VIEW 1
@@ -19,28 +20,65 @@ void Database::select(string view_name, string in_table_name, int row_index){
 		if(VIEW_LIST[i][0][0] == view_name){
 			VIEW_CHECK = false;
 		}
-
-	vector<vector<string>> TEMP_VIEW_TABLE;
+	bool IN_VIEW = false;
+	bool IN_RELATION = false;
+	for(unsigned int i=0; i<VIEW_LIST.size(); i++)
+		if(VIEW_LIST[i][0][0] == in_table_name){
+			IN_VIEW = true;
+		}
+	for(unsigned int i=0; i<RELATION_LIST.size(); i++)
+		if(VIEW_LIST[i][0][0] == in_table_name){
+			IN_RELATION = true;
+		}
+	if(!IN_VIEW)
+		if(!IN_RELATION)
+			throw runtime_error("select: no such table");
 	
-	if(VIEW_CHECK){
-		int RELATION_INDEX = get_relation_index(in_table_name);
-		vector<string> temp_vec;
-		temp_vec.push_back(view_name);
-		for(unsigned int i=1; i<RELATION_LIST[RELATION_INDEX][0].size(); i++)
-			temp_vec.push_back(RELATION_LIST[RELATION_INDEX][0][i]);
+	vector<vector<string>> TEMP_VIEW_TABLE;
+	if(IN_RELATION){
+		if(VIEW_CHECK){
+			int RELATION_INDEX = get_relation_index(in_table_name);
+			vector<string> temp_vec;
+			temp_vec.push_back(view_name);
+			for(unsigned int i=1; i<RELATION_LIST[RELATION_INDEX][0].size(); i++)
+				temp_vec.push_back(RELATION_LIST[RELATION_INDEX][0][i]);
 
-		TEMP_VIEW_TABLE.push_back(temp_vec);
-		TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][1]);
-		TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][2]);
-		TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][row_index]);
+			TEMP_VIEW_TABLE.push_back(temp_vec);
+			TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][1]);
+			TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][2]);
+			TEMP_VIEW_TABLE.push_back(RELATION_LIST[RELATION_INDEX][row_index]);
 
-		VIEW_LIST.push_back(TEMP_VIEW_TABLE);
+			VIEW_LIST.push_back(TEMP_VIEW_TABLE);
+		}
+		else{
+			int VIEW_INDEX = get_view_index(view_name);
+			int RELATION_INDEX = get_relation_index(in_table_name);
+			VIEW_LIST[VIEW_INDEX].push_back(RELATION_LIST[RELATION_INDEX][row_index]);
+		}
 	}
-	else{
-		int VIEW_INDEX = get_view_index(view_name);
-		int RELATION_INDEX = get_relation_index(in_table_name);
-		VIEW_LIST[VIEW_INDEX].push_back(RELATION_LIST[RELATION_INDEX][row_index]);
+	else if(IN_VIEW){
+		if(VIEW_CHECK){
+			int VIEW_INDEX = get_view_index(in_table_name);
+			vector<string> temp_vec;
+			temp_vec.push_back(view_name);
+			for(unsigned int i=1; i<VIEW_LIST[VIEW_INDEX][0].size(); i++)
+				temp_vec.push_back(VIEW_LIST[VIEW_INDEX][0][i]);
+
+			TEMP_VIEW_TABLE.push_back(temp_vec);
+			TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][1]);
+			TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][2]);
+			TEMP_VIEW_TABLE.push_back(VIEW_LIST[VIEW_INDEX][row_index]);
+
+			VIEW_LIST.push_back(TEMP_VIEW_TABLE);
+		}
+		else{
+			int VIEW_INDEX = get_view_index(view_name);
+			int V_INDEX = get_view_index(in_table_name);
+			VIEW_LIST[VIEW_INDEX].push_back(VIEW_LIST[V_INDEX][row_index]);
+		}
 	}
+	else
+		throw runtime_error("Select: no such table name exists");
 }
 
 void Database::project(string view_name, string in_table_name, vector<string> attributes){
@@ -419,7 +457,15 @@ int Database::get_attribute_index(int table_type, int table_index, string attrib
 	return COLUMN_INDEX;
 }
 
-void erase_view(string view_name){
+void Database::erase_view(string view_name){
 	int VIEW_INDEX = get_view_index(view_name);
 	VIEW_LIST.erase(VIEW_LIST.begin() + VIEW_INDEX);
+}
+
+void Database::change_view_name(string new_name, string old_name){
+	int VIEW_INDEX = get_view_index(old_name);
+	if(VIEW_INDEX == -1)
+		throw runtime_error("Change View Name: No such table exists");
+	else
+		VIEW_LIST[VIEW_INDEX][0][0] = new_name;
 }
