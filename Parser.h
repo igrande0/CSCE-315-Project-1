@@ -68,14 +68,18 @@ private:
 	void op();
 	void operand();
 
-	void attribute_list();
+	string get_previous_data();
+
+	vector<string> attribute_list();
 	void typed_attribute_list();
-	void type();
+	string type();
 
 	vector<Token> tokens;
 	vector<string> raw_data;
 
 	int current_index = 0;
+
+	int current_view_name = 0;
 };
 
 #endif
