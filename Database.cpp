@@ -1,4 +1,5 @@
 #include "Database.h"
+#include <fstream>
 
 #include <cctype>
 #include <iostream>
@@ -93,10 +94,16 @@ void Database::project(string view_name, string in_table_name, vector<string> at
 		if(INDEX == -1)
 			throw runtime_error("Project: no such view exists");
 		else{
-			for(unsigned int i = 0; i<VIEW_LIST[INDEX][1].size(); i++)
-				for(unsigned int j=0; j<attributes.size(); j++)
-					if(attributes[j] == VIEW_LIST[INDEX][1][i])
+			bool ATTRIBUTE_CHECK = false;
+			for(unsigned int i = 0; i<attributes.size(); i++){
+				for(unsigned int j=0; j<VIEW_LIST[INDEX][1].size(); j++)
+					if(attributes[i] == VIEW_LIST[INDEX][1][j]){
 						columns.push_back(i);
+						ATTRIBUTE_CHECK = true;
+					}
+				if(ATTRIBUTE_CHECK == false)
+					throw runtime_error("Project: no such attribute exists " + attributes[i]);
+			}
 			vector<string> t_vec;
 			t_vec.push_back(view_name);
 			TEMP_VIEW_TABLE.push_back(t_vec);
@@ -111,10 +118,16 @@ void Database::project(string view_name, string in_table_name, vector<string> at
 		}
 	}
 	else{
-		for(unsigned int i = 0; i<RELATION_LIST[INDEX][1].size(); i++)
-			for(unsigned int j=0; j<attributes.size(); j++)
-				if(attributes[j] == RELATION_LIST[INDEX][1][i])
+		bool ATTRIBUTE_CHECK = false;
+		for(unsigned int i = 0; i<attributes.size(); i++){
+			for(unsigned int j=0; j<RELATION_LIST[INDEX][1].size(); j++)
+				if(attributes[i] == RELATION_LIST[INDEX][1][j]){
 					columns.push_back(i);
+					ATTRIBUTE_CHECK = true;
+				}
+			if(ATTRIBUTE_CHECK == false)
+				throw runtime_error("Project: no such attribute exists " + attributes[i]);
+		}
 		vector<string> t_vec;
 		t_vec.push_back(view_name);
 		TEMP_VIEW_TABLE.push_back(t_vec);
@@ -143,11 +156,13 @@ void Database::rename(string new_view, string existing_table, vector<string> att
 	else if((existing_table_index = get_view_index(existing_table)) != -1)
 		existing_table_type = VIEW;
 	else
-		; // RETURN AN ERROR
+		throw runtime_error("Rename: table does not exist");
 		
 	// ERROR - incorrect number of attributes 
-	if(existing_table_type == RELATION && RELATION_LIST[existing_table_index][1].size() != attributes.size());
-	if(existing_table_type == VIEW && VIEW_LIST[existing_table_index][1].size() != attributes.size());
+	if(existing_table_type == RELATION && RELATION_LIST[existing_table_index][1].size() != attributes.size())
+		throw runtime_error("Rename: incorrect number of relation attributes");
+	if(existing_table_type == VIEW && VIEW_LIST[existing_table_index][1].size() != attributes.size())
+		throw runtime_error("Rename: incorrect number of view attributes");
 		
 	// create new view table with 2 rows (title and attribute rows)
 	VIEW_LIST.push_back(vector<vector<string> >(2));
@@ -278,12 +293,59 @@ void Database::cross_product(string view_name, string relation1_name, string rel
 /* COMMAND FUNCTIONS */
 /*------------------------------------------------------------------------------------*/
 
-void Database::close(string table_name){
-	//dont need for monday Sept. 9th submission
+void Database::close(string table_name){			//clears all vectors erasing all data that has not been written to a file
+	RELATION_LIST.clear();						
+	VIEW_LIST.clear();
 }
 
 void Database::write(string table_name){
-	//dont need for monday Sept. 9th submission
+	int INDEX = get_relation_index(table_name);
+	if(INDEX == -1){
+		INDEX = get_view_index(table_name);
+		if(INDEX == -1)
+			throw runtime_error("Write: no such table exists");
+		else
+			write_table(table_name, VIEW_LIST[INDEX]);
+	}
+	else
+		write_table(table_name, RELATION_LIST[INDEX]);
+}
+
+void Database::write_table(string table_name, const vector<vector<string>>& TABLE){
+	ofstream OUTPUT_FILE;
+	OUTPUT_FILE.open(table_name + ".db");
+	OUTPUT_FILE << "CREATE TABLE " << table_name << " (";
+	for(unsigned int i=0; i<TABLE[1].size(); i++){
+		if(i != (TABLE[1].size() - 1))
+			OUTPUT_FILE << TABLE[1][i] << " " << TABLE[2][i] << ", ";
+		else
+			OUTPUT_FILE << TABLE[1][i] << " " << TABLE[2][i] << ") ";
+	}
+	OUTPUT_FILE << "PRIMARY KEY (";
+	for(unsigned int i=1; i<TABLE[0].size(); i++){
+		if(i != (TABLE[0].size() - 1))
+			OUTPUT_FILE << TABLE[0][i] << ", ";
+		else
+			OUTPUT_FILE << TABLE[0][i] << ");" << endl;
+	}
+	for(unsigned int i=3; i<TABLE.size(); i++){
+		OUTPUT_FILE << "INSERT INTO " << table_name << " VALUES FROM (";
+		for(unsigned int j=0; j<TABLE[i].size(); j++){
+			if(j != (TABLE[i].size() - 1)){
+				if(TABLE[2][j] == "INTEGER")
+					OUTPUT_FILE << TABLE[i][j] << ", ";
+				else
+					OUTPUT_FILE << "\"" << TABLE[i][j] << "\", ";
+			}
+			else{
+				if(TABLE[2][j] == "INTEGER")
+					OUTPUT_FILE << TABLE[i][j] << ");" << endl;
+				else
+					OUTPUT_FILE << "\"" << TABLE[i][j] << "\");" << endl;
+			}
+		}
+	}
+	OUTPUT_FILE.close();
 }
 
 void Database::show(string table_name){

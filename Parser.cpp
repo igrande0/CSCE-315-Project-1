@@ -296,6 +296,15 @@ bool Parser::query() {
 bool Parser::command() {
 	if(accept(OPEN)) {
 		expect(IDENTIFIER, "open: expected identifier");
+		string file_name = get_previous_data();
+		ifstream INPUT_FILE;
+		INPUT_FILE.open(file_name + ".db");
+		if(!INPUT_FILE.is_open())
+			throw runtime_error("Open: file failed to open");
+		string NEW_LINE;
+		while(getline(INPUT_FILE, NEW_LINE))
+			execute(NEW_LINE);
+		INPUT_FILE.close();
 	}
 	else if(accept(CLOSE)) {
 		expect(IDENTIFIER, "close: expected identifier");
