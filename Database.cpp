@@ -82,27 +82,51 @@ void Database::select(string view_name, string in_table_name, int row_index){
 }
 
 void Database::project(string view_name, string in_table_name, vector<string> attributes){
-	int RELATION_INDEX = get_relation_index(in_table_name);
+	if(view_name == in_table_name)
+		throw runtime_error("Project: both name equal");
+	int INDEX = get_relation_index(in_table_name);
 	vector<vector<string>> TEMP_VIEW_TABLE;
 	vector<int> columns;
-	
-	
-	
-	for(unsigned int i = 0; i<RELATION_LIST[RELATION_INDEX][1].size(); i++)
-		for(unsigned int j=0; j<attributes.size(); j++)
-			if(attributes[j] == RELATION_LIST[RELATION_INDEX][1][i])
-				columns.push_back(i);
-	vector<string> t_vec;
-	t_vec.push_back(view_name);
-	TEMP_VIEW_TABLE.push_back(t_vec);
+
+	if(INDEX == -1){
+		INDEX = get_view_index(in_table_name);
+		if(INDEX == -1)
+			throw runtime_error("Project: no such view exists");
+		else{
+			for(unsigned int i = 0; i<VIEW_LIST[INDEX][1].size(); i++)
+				for(unsigned int j=0; j<attributes.size(); j++)
+					if(attributes[j] == VIEW_LIST[INDEX][1][i])
+						columns.push_back(i);
+			vector<string> t_vec;
+			t_vec.push_back(view_name);
+			TEMP_VIEW_TABLE.push_back(t_vec);
 	 
-	for(unsigned int i=1; i< RELATION_LIST[RELATION_INDEX].size(); i++){
-		vector<string> temp_vec;
-		for(unsigned int j=0; j<columns.size(); j++)
-			temp_vec.push_back(RELATION_LIST[RELATION_INDEX][i][columns[j]]);
-		TEMP_VIEW_TABLE.push_back(temp_vec);
+			for(unsigned int i=1; i< VIEW_LIST[INDEX].size(); i++){
+				vector<string> temp_vec;
+				for(unsigned int j=0; j<columns.size(); j++)
+					temp_vec.push_back(VIEW_LIST[INDEX][i][columns[j]]);
+				TEMP_VIEW_TABLE.push_back(temp_vec);
+			}
+			VIEW_LIST.push_back(TEMP_VIEW_TABLE);
+		}
 	}
-	VIEW_LIST.push_back(TEMP_VIEW_TABLE);
+	else{
+		for(unsigned int i = 0; i<RELATION_LIST[INDEX][1].size(); i++)
+			for(unsigned int j=0; j<attributes.size(); j++)
+				if(attributes[j] == RELATION_LIST[INDEX][1][i])
+					columns.push_back(i);
+		vector<string> t_vec;
+		t_vec.push_back(view_name);
+		TEMP_VIEW_TABLE.push_back(t_vec);
+		 
+		for(unsigned int i=1; i< RELATION_LIST[INDEX].size(); i++){
+			vector<string> temp_vec;
+			for(unsigned int j=0; j<columns.size(); j++)
+				temp_vec.push_back(RELATION_LIST[INDEX][i][columns[j]]);
+			TEMP_VIEW_TABLE.push_back(temp_vec);
+		}
+		VIEW_LIST.push_back(TEMP_VIEW_TABLE);
+	}
 }
 
 /* rename all attributes in an existing table (can be a relation or view)
@@ -468,4 +492,20 @@ void Database::change_view_name(string new_name, string old_name){
 		throw runtime_error("Change View Name: No such table exists");
 	else
 		VIEW_LIST[VIEW_INDEX][0][0] = new_name;
+}
+vector<vector<string>> Database::get_tuples(string table_name){
+	int INDEX = get_relation_index(table_name);
+	vector<vector<string>> TEMP_TABLE;
+	if(INDEX == -1){
+		INDEX = get_view_index(table_name);
+		if(INDEX == -1)
+			throw runtime_error("Get Tuples: no such table exists");
+		else
+			for(unsigned int i=3; i<VIEW_LIST[INDEX].size(); i++)
+				TEMP_TABLE.push_back(VIEW_LIST[INDEX][i]);
+	}
+	else
+		for(unsigned int i=3; i<RELATION_LIST[INDEX].size(); i++)
+				TEMP_TABLE.push_back(RELATION_LIST[INDEX][i]);	
+	return TEMP_TABLE;
 }
