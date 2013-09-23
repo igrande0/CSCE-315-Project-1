@@ -189,15 +189,14 @@ void Database::set_union(string view_name, string relation1_name, string relatio
 
 	// ERROR - no such table
 	if((r1_index = get_relation_index(relation1_name)) == -1)
-		;
+		throw runtime_error("Set Union: Relation Name 1 table does not exist");
 	// ERROR - no such table
 	if((r2_index = get_relation_index(relation2_name)) == -1)
-		;
+		throw runtime_error("Set Union: Relation Name 2 table does not exist");
 
 	// ERROR - non-matching attributes
-	if(RELATION_LIST[r1_index][1] != RELATION_LIST[r2_index][1] 
-	|| RELATION_LIST[r1_index][2] != RELATION_LIST[r2_index][2])
-		;
+	if(RELATION_LIST[r1_index][1] != RELATION_LIST[r2_index][1] || RELATION_LIST[r1_index][2] != RELATION_LIST[r2_index][2])
+		throw runtime_error("Set Union: Attributes do not match");
 
 	// create new view table
 	VIEW_LIST.push_back(vector<vector<string> >());
@@ -439,12 +438,14 @@ void Database::insert_tuple(string relation_name, vector<string> tuple){
 void Database::insert_view(string relation_name, string view_name){
 	int view_index = -1;
 	int relation_index = -1;
-
+	for(unsigned int i=0; i<)
 	if((view_index = get_view_index(view_name)) == -1)
-		; // RETURN ERROR
+		throw runtime_error("Insert View: view name does not exist"); // RETURN ERROR
 
 	if((relation_index = get_relation_index(relation_name)) == -1)
-		; // RETURN ERROR
+		throw runtime_error("Insert View: relation table does not exist"); // RETURN ERROR
+	//for(unsigned int i=0; i<VIEW_LIST[view_index].size(); i+)
+		//needs to be completed - JM
 
 	// copy values from view table to relation table
 	for(unsigned int i = 3; i < VIEW_LIST[view_index].size(); ++i)
@@ -456,7 +457,8 @@ void Database::remove(string relation_name, int row_index){
 	relation_index = get_relation_index(relation_name);
 
 	// ERROR - no such relation
-	if(relation_index == -1);
+	if(relation_index == -1)
+		throw runtime_error("Remove: No such relation");
 
 	RELATION_LIST[relation_index].erase(RELATION_LIST[relation_index].begin() + row_index);
 }
