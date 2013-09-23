@@ -32,6 +32,7 @@ private:
 	template <class T> bool compare(T left_arg, T right_arg, string comparison_op);
 	int extract_digits(string input);
 	void print_table(const vector<vector<string > >& table);
+	void write_table(string table_name, const vector<vector<string>>& TABLE);
 
 public:
 	// Query Functions
@@ -45,6 +46,7 @@ public:
 	// Command Functions
 	void close(string table_name);
 	void write(string table_name);
+	void open(string file_name);
 	void show(string table_name);
 	void create(string table_name, vector<string> attributes, vector<string> attribute_types, vector<string> keys);
 	void update(string relation_name, vector<string> attribute, vector<string> data, int row_index);
@@ -59,6 +61,8 @@ public:
 	bool compare(string attribute_type, string left_arg, string right_arg, string comparison_op);
 	void erase_view(string view_name);
 	void change_view_name(string new_name, string old_name);
+	vector<vector<string>> get_tuples(string table_name);
+	
 };
 
 #endif
