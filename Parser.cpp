@@ -485,27 +485,41 @@ void Parser::op() {
 		throw runtime_error("op: unexpected operator");
 }
 
-void Parser::attribute_list() {
+vector<string> Parser::attribute_list() {
+	vector<string> attributes;
+
 	do {
 		expect(IDENTIFIER, "attribute list: expected identifier");
+		attributes.push_back(raw_data[current_index-1]);
 	} while(accept(COMMA));
+
+	return attributes;
 }
 
 void Parser::typed_attribute_list() {
+	vector<string> attributes;
+	vector<string> types;
+
 	do {
 		expect(IDENTIFIER, "typed attribute list: expected identifier");
 		type();
 	} while(accept(COMMA));
 }
 
-void Parser::type() {
+string Parser::type() {
+	string type = "";
 	if(accept(VARCHAR)) {
 		expect(LPAREN, "VARCHAR: expected '('");
+		type += raw_data[current_index - 1];
+
 		expect(INTEGER, "VARCHAR: expected integer");
+		type += get_previous_data();;
+
 		expect(RPAREN, "VARCHAR: expected ')'");
+		type += raw_data[current_index - 1];
 	}
 	else if(accept(INTEGER_SYM)) {
-
+		type += raw_data[current_index - 1];
 	}
 	else
 		throw runtime_error("type: unexpected symbol");
