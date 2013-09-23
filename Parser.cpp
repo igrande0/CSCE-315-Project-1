@@ -1,9 +1,11 @@
 #include "Parser.h"
+#include "Database.h"
 
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <utility>
 
 using namespace std;
 
@@ -373,72 +375,136 @@ bool Parser::command() {
 	return true;
 }
 
-void Parser::expression() {
+string Parser::expression() {
+	string view_name;
+	string left_argument;
+	string right_argument;
+
 	if(accept(SELECT)) 
-		selection();
+		view_name = selection();
 	else if(accept(PROJECT))
-		projection();
+		view_name = projection();
 	else if(accept(RENAME))
-		renaming();
+		view_name = renaming();
 	else {
-		atomic_expr();
-		if(accept(PLUS)) 
-			atomic_expr();
-		else if(accept(MINUS)) 
-			atomic_expr();
-		else if(accept(TIMES)) 
-			atomic_expr();
+		view_name = atomic_expr();
+
+		if(accept(PLUS)) {
+			left_argument = view_name;
+			view_name = get_anonymous_view();
+			right_argument = atomic_expr(); 
+
+			db.set_union(view_name, left_argument, right_argument);
+		}
+
+		else if(accept(MINUS)) {
+			left_argument = view_name;
+			view_name = get_anonymous_view();
+			right_argument = atomic_expr(); 
+
+			db.set_difference(view_name, left_argument, right_argument);
+		}
+
+		else if(accept(TIMES)) {
+			left_argument = view_name;
+			view_name = get_anonymous_view();
+			right_argument = atomic_expr(); 
+
+			db.cross_product(view_name, left_argument, right_argument);
+		}
 	}
+
+	return view_name;
 }
 
-void Parser::atomic_expr() {
-	if(accept(IDENTIFIER)) {
+string Parser::atomic_expr() {
+	string view_name;
 
+	if(accept(IDENTIFIER)) {
+		view_name = get_previous_data();
 	}
 	else if(accept(LPAREN)) {
-		expression();
+		view_name = expression();
 		expect(RPAREN, "atomic expression: expected ')'");
 	}
 	else
 		throw runtime_error("atomic expression: unexpected symbol");
+
+	return view_name;
 }
 
-void Parser::selection() {
+string Parser::selection() {
+	string view_name = get_anonymous_view();
+	string in_table_name;
+
 	expect(LPAREN, "selection: expected '('");
 	condition();
 	expect(RPAREN, "selection: expected ')'");
-	atomic_expr();
+	in_table_name = atomic_expr();
+
+	return view_name;
 }
 
-void Parser::projection() {
+string Parser::projection() {
+	string view_name = get_anonymous_view();
+	string in_table_name;
+	vector<string> attributes;
+
 	expect(LPAREN, "projection: expected '('");
-	attribute_list();
+	attributes = attribute_list();
 	expect(RPAREN, "projection: expected ')'");
-	atomic_expr();
+	in_table_name = atomic_expr();
+
+	db.project(view_name, in_table_name, attributes);
+
+	return view_name;
 }
 
-void Parser::renaming() {
+string Parser::renaming() {
+	string view_name = get_anonymous_view();
+	string in_table_name;
+	vector<string> attributes;
+
 	expect(LPAREN, "rename: expected '('");
-	attribute_list();
+	attributes = attribute_list();
 	expect(RPAREN, "rename: expected ')'");
-	atomic_expr();
+	in_table_name = atomic_expr();
+
+	db.rename(view_name, in_table_name, attributes);
+
+	return view_name;
 }
 
-void Parser::condition() {
+vector<bool> Parser::condition(vector<vector<string> > tuples) {
+	vector<bool> values(tuples.size(), false);
+
 	do {
-		conjunction();
+		vector<bool> new_values = conjunction(tuples);
+		for(unsigned int i = 0; i < values.size(); ++i) 
+			values[i] = values[i] || new_values[i];
 	} while(accept(OR));
+
+	return values;
 }
 
-void Parser::conjunction() {
+vector<bool> Parser::conjunction(vector<vector<string> > tuples) {
+	vector<bool> values(tuples.size(), true);
+	
 	do {
-		comparison();
+		vector<bool> new_values = conjunction(tuples);
+		for(unsigned int i = 0; i < values.size(); ++i) 
+			values[i] = values[i] && new_values[i];
 	} while(accept(AND));
+
+	return values;
 }
 
-void Parser::comparison() {
+vector<bool> Parser::comparison(vector<vector<string> > tuples) {
+	vector<bool> values(tuples.size());
+
 	if(accept(LPAREN)) {
-		condition();
+		if(tuples.size() == 0)
+			values = condition();
 		expect(RPAREN, "comparison: expected ')'");
 	}
 	else {
@@ -446,6 +512,8 @@ void Parser::comparison() {
 		op();
 		operand();
 	}
+
+	return values;
 }
 
 void Parser::operand() {
@@ -490,37 +558,53 @@ vector<string> Parser::attribute_list() {
 
 	do {
 		expect(IDENTIFIER, "attribute list: expected identifier");
-		attributes.push_back(raw_data[current_index-1]);
+		attributes.push_back(get_previous_data());
 	} while(accept(COMMA));
 
 	return attributes;
 }
 
-void Parser::typed_attribute_list() {
+pair<vector<string>, vector<string> > Parser::typed_attribute_list() {
 	vector<string> attributes;
 	vector<string> types;
 
 	do {
 		expect(IDENTIFIER, "typed attribute list: expected identifier");
-		type();
+		attributes.push_back(get_previous_data());
+
+		types.push_back(type());
 	} while(accept(COMMA));
+
+	pair<vector<string>, vector<string> > return_pair (attributes, types);
+	return return_pair;
 }
 
 string Parser::type() {
-	string type = "";
+	string type;
 	if(accept(VARCHAR)) {
 		expect(LPAREN, "VARCHAR: expected '('");
-		type += raw_data[current_index - 1];
+		type += get_previous_data();
 
 		expect(INTEGER, "VARCHAR: expected integer");
-		type += get_previous_data();;
+		type += get_previous_data();
 
 		expect(RPAREN, "VARCHAR: expected ')'");
-		type += raw_data[current_index - 1];
+		type += get_previous_data();
 	}
 	else if(accept(INTEGER_SYM)) {
-		type += raw_data[current_index - 1];
+		type += get_previous_data();
 	}
 	else
 		throw runtime_error("type: unexpected symbol");
+	return type;
+}
+
+string Parser::get_previous_data() {
+	return raw_data[current_index - 1];
+}
+
+string Parser::get_anonymous_view() {
+	string view_name = to_string(current_anon_view);
+	++current_anon_view;
+	return view_name;
 }

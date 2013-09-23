@@ -1,8 +1,11 @@
 #ifndef PARSER_H_
 #define PARSER_H_
 
+#include "Database.h"
+
 #include <string>
 #include <vector>
+#include <utility>
 
 using namespace std;
 
@@ -41,12 +44,12 @@ public:
 		"INTEGER", "IDENTIFIER", "LITERAL"
 	};
 	void execute(string input);
-	string get_error();
 	bool get_second_word(string FIRST_WORD);
 	void add_token(Token token, string s);
 	Token get_token(string s);
 
 private:
+	// Parser functions
 	void lex(string input);
 	void parse();
 
@@ -55,31 +58,35 @@ private:
 
 	bool query();
 	bool command();
-	void expression();
-	void atomic_expr();
+	string expression();
+	string atomic_expr();
 
-	void selection();
-	void projection();
-	void renaming();
+	string selection();
+	string projection();
+	string renaming();
 
-	void condition();
-	void conjunction();
-	void comparison();
+	vector<bool> condition(vector<vector<string> > tuples = vector<vector<string> >());
+	vector<bool> conjunction(vector<vector<string> > tuples = vector<vector<string> >());
+	vector<bool> comparison(vector<vector<string> > tuples = vector<vector<string> >());
 	void op();
 	void operand();
 
-	string get_previous_data();
-
 	vector<string> attribute_list();
-	void typed_attribute_list();
+	pair<vector<string>, vector<string> > typed_attribute_list();
 	string type();
 
+	// Uitilities
+	string get_previous_data();
+	string get_anonymous_view();
+
+	// Data
 	vector<Token> tokens;
 	vector<string> raw_data;
 
 	int current_index = 0;
+	int current_anon_view = 0;
 
-	int current_view_name = 0;
+	Database db;
 };
 
 #endif

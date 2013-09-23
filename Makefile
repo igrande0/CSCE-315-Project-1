@@ -1,7 +1,7 @@
 # makefile
 
 DBOBJS	= Database.o DBTest.o
-POBJS	= Parser.o ParserTest.o
+POBJS	= Parser.o Database.o ParserTest.o
 CC	= g++
 DEBUG	= -g
 CFLAGS	= -Wall -c --std=c++0x $(DEBUG)
