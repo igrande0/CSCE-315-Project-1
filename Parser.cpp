@@ -11,9 +11,9 @@
 using namespace std;
 
 bool Parser::execute(string input) {
-	bool ret_val = true;;
-	cout << "---------------------------------------------------------------\n";
-	cout << "\n\nINPUT: " << input << "\n\n";
+	bool ret_val = true;
+	//cout << "---------------------------------------------------------------\n";
+	//cout << "\n\nINPUT: " << input << "\n\n";
 	try{
 		lex(input);
 		parse();
@@ -22,13 +22,13 @@ bool Parser::execute(string input) {
 		cout  << "error: " << e.what() << endl;
 		ret_val = false;
 	}
-	cout << "\n\nTOKENS:\n";
+	/*cout << "\n\nTOKENS:\n";
 	for(unsigned int i = 0; i < raw_data.size(); ++i)
 		cout << '[' << raw_data[i] << ']';
 	cout << "\n\nTOKEN ENUMS:\n";
 	for(unsigned int i = 0; i < tokens.size(); ++i)
 		cout << '[' << token_strings[tokens[i]] << ']';
-	cout << "\n\n\n---------------------------------------------------------------\n";
+	cout << "\n\n\n---------------------------------------------------------------\n";*/
 	return ret_val;
 }
 

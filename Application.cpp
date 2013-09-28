@@ -1,29 +1,99 @@
 #include "Application.h"
 
-//bank - (name, routing#, address)
-//account - (account#, type, balance)
-//person - (name, address, birthdate, phone#)
+Application::Application() {
+	vector<string> keys {
+		"bank name, bank routing number",
+		"account number, account type",
+		"name, birthdate",
+		"person's name, bank name",
+		"person's name, account number",
+		"bank name, account number"};	
+	vector<vector<string> > attribute_types {
+		{"VARCHAR(255)", "INT", "VARCHAR(255)"},
+		{"INTEGER", "VARCHAR(255)", "INTEGER"},
+		{"VARCHAR(255)", "VARCHAR(255)", "VARCHAR(255)", "VARCHAR(255)"},
+		{"VARCHAR(255)", "VARCHAR(255)"},
+		{"VARCHAR(255)", "INTEGER"},
+		{"VARCHAR(255)", "INTEGER"}};
 
-void Application::add_bank(){
+	// either open all tables or create all tables and save to disk
+	for(unsigned int i = 0; i < tables.size(); ++i)
+		if(!parser.execute("OPEN " + tables[i] + ";")) {
+			// construct CREATE TABLE command
+			string create = "CREATE TABLE " + tables[i] + "(";
+			for(unsigned int j = 0; j < attributes[i].size(); ++j){
+				create += attributes[i][j] + " " + attribute_types[i][j];
+				if(j != attributes[i].size()-1)
+					create += ", ";
+			}
+			create += ") PRIMARY KEY (" + keys[i] +");";
 
+			parser.execute(create);
+			parser.execute("WRITE " + tables[i] + ";");
+		}
 }
 
-void Application::remove_bank(){
+Application::~Application() {
+	// save all tables to disk
+	for(unsigned int i = 0; i < tables.size(); ++i) 
+		parser.execute("WRITE " + tables[i] + ";");
 
+	// clear all open tables
+	parser.execute("EXIT;");
 }
 
-void Application::add_account(){
-
+void Application::main_menu() {
+	// LOOP
+	// display menu
+	// take in valid option #
+	// call table_menu(tables[i-1])
 }
 
-void Application::remove_account(){
-
+void Application::table_menu(string table) {
+	// LOOP
+	// display menu
+	// take in valid option #
+	// call add(), remove(), or update() with correct tables[i] and corresponding attributes[i]
 }
 
-void Applcation::add_person(){
-
+void Application::display_main_menu() {
+	// CHANGE THESE -  maybe? I think they sound stupid - Isaac
+	cout << "What would you like to do? Enter the number of your choice.\n";
+	cout << "(1) modify the bank list\n";
+	cout << "(2) modify the person list\n";
+	cout << "(3) modify the account list\n";
+	cout << "(4) modify the enrollment list\n";
+	cout << "(5) modify the authorization list\n";
+	cout << "(6) modify the account host list\n";
+	// ADD queries somehow?
 }
 
-void remove_person(){
+void Application::display_table_menu(string table) {
+	// CHANGE - these won't make sense and will need to be fixed somehow
+	cout << "How would you like to modify the" << table << " list? Enter the number of your choice.\n";
+	cout << "(1) add a " << table << "\n";
+	cout << "(2) remove a" << table << "\n";
+	cout << "(3) update a" << table << "\n";
+}
 
+void Application::add(string table, vector<string> attributes){
+	// EXAMPLE: INSERT INTO baseball_players VALUES FROM ("Alexander", "Smith", "Pirates", 2, 150000);
+	// ask for every attribute
+	// construct/call INSERT INTO
+	// WRITE
+}
+
+void Application::remove(string table, vector<string> attributes){
+	// EXAMPLE: DELETE FROM dots WHERE (y1 <= 0);
+	// loop to ask what conditions
+	// construct/call DELETE FROM
+	// WRITE
+}
+
+void Application::update(string table, vector<string> attributes){
+	// EXAMPLE: UPDATE dots SET x1 = 0 WHERE x1 < 0;
+	// loop to ask what conditions
+	// loop to ask what to change
+	// construct/call UPDATE
+	// WRITE
 }
