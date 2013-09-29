@@ -42,6 +42,71 @@ Application::~Application() {
 	parser.execute("EXIT;");
 }
 
+#define BANK 1
+#define ACCOUNT 2
+#define PERSON 3
+
+int Application::main_menu(){
+	cout<<"Welcome to the Bank Databasing System!"<<endl;
+	cout<<"Please enter the integer corresponding to the entity you would like to add, change, ect.:"<<endl;
+	cout<<"Bank:\t1"<<endl;
+	cout<<"Account:\t2"<<endl;
+	cout<<"Person:\t3"<<endl;
+	int MENU;
+	cin>>MENU;
+}
+
+void Application::second_menu(int type){
+	cout<<"Enter integer of desired option"<<endl;
+	cout<<"Add:\t1"<<endl;
+	cout<<"Remove:\t2"<<endl;
+	cout<<"Update:\t3"<<endl;
+	int MENU;
+	cin>>MENU;
+	switch(MENU){
+	case 1:
+		switch(type){
+			case BANK:
+				add_bank();
+				break;
+			case ACCOUNT:
+				add_account();
+				break;
+			case PERSON:
+				add_person();
+				break;
+		}
+		break;
+	case 2:
+		switch(type){
+			case BANK:
+				remove_bank();
+				break;
+			case ACCOUNT:
+				remove_account();
+				break;
+			case PERSON:
+				remove_person();
+				break;
+		}
+		break;
+	case 3:
+		switch(type){
+			case BANK:
+				update_bank();
+				break;
+			case ACCOUNT:
+				update_account();
+				break;
+			case PERSON:
+				update_person();
+				break;
+		}
+		break;
+	}
+}
+
+/*
 void Application::main_menu() {
 	int input;
 	display_main_menu();
@@ -130,9 +195,10 @@ void Application::display_table_menu(string table) {
 	/*cout << "How would you like to modify the" << table << " list? Enter the number of your choice.\n";
 	cout << "(1) add a " << table << "\n";
 	cout << "(2) remove a" << table << "\n";
-	cout << "(3) update a" << table << "\n";*/
+	cout << "(3) update a" << table << "\n";
 }
-
+*/
+/*
 void Application::add(string table, vector<string> attributes){
 	// EXAMPLE: INSERT INTO baseball_players VALUES FROM ("Alexander", "Smith", "Pirates", 2, 150000);
 	// ask for every attribute
@@ -154,3 +220,97 @@ void Application::update(string table, vector<string> attributes){
 	// construct/call UPDATE
 	// WRITE
 }
+*/
+
+void Application::add_bank(){
+	string BANK_NAME;
+	string ROUTING_NUMBER;
+	string ADDRESS;
+	cout<<"Enter the name of new bank: ";
+	cin<<BANK_NAME;
+	cout<<endl<<"Enter the banks routing number: ";
+	cin>>ROUTING_NUMBER;
+	cout<<endl<<"Enter the banks address: ";
+	cin>>ADDRESS;
+	parser.query("INSERT INTO banks VALUES (" + BANK_NAME + ", " + ROUTING_NUMBER + ", " + ADDRESS + ");");
+	parser.query("WRITE banks;");
+}
+
+void Application::remove_bank(){
+	string BANK_NAME;
+	string ROUTING_NUMBER;
+	string ADDRESS;
+	
+	cout<<"Enter the name of the bank you would like to remove: ";
+	cin>>BANK_NAME;
+	
+	cout<<endl<<"Enter the routing number: ";
+	cin>>ROUTING_NUMBER;
+	cout<<endl;
+	
+	parser.execute("DELETE FROM bank WHERE bank_name=\"" + BANK_NAME + "\" AND routing_number=\"" + ROUTING_NUMBER + "\";");
+	parser.execute("WRITE bank;");
+}
+
+void Application::update_bank(){
+	
+}
+
+void Application::add_account(){
+	string ACCOUNT_NUMBER;
+	string TYPE;
+	string BALANCE;
+	cout<<"Enter new account number: ";
+	cin>>ACCOUNT_NUMBER;
+	cout<<endl<<"Enter the account type(savings, checking): ";
+	cin>>TYPE;
+	cout<<endl<<"Enter the accounts starting balance: ";
+	cin>>BALANCE;
+	cout<<endl;
+	parser.execute("INSERT INTO account VALUES (" + ACCOUNT_NUMBER + ", " + TYPE + ", " + BALANCE + ")");
+	parser.execute("WRITE account");
+}
+
+void Application::remove_account(){
+	string ACCOUNT_NUMBER;
+	string TYPE;
+	cout<<"Enter new account number: ";
+	cin>>ACCOUNT_NUMBER;
+	cout<<endl<<"Enter the account type(savings, checking): ";
+	cin>>TYPE;
+	cout<<endl;
+	parser.execute("DELETE FROM account WHERE account_number=" + ACCOUNT_NUMBER + " AND account_type=\"" + TYPE "\";");
+	parser.execute("WRITE account;");
+}
+
+void Applcation::add_person(){
+	string NAME;
+	string ADDRESS;
+	string BIRTH_DATE;
+	string PHONE_NUMBER;
+	cout<<"Enter new person's first and last name: ";
+	cin>>NAME;
+	cout<<endl<<"Enter the person's address: ";
+	cin>>ADDRESS;
+	cout<<endl<<"Enter the person's birth date: ";
+	cin>>BIRTH_DATE;
+	cout<<endl<<"Enter the person's phone number (without dashes and spaces): ";
+	cin>>PHONE_NUMBER;
+	cout<<endl;
+	
+	parser.execute("INSERT INTO person VALUES (\"" + NAME + "\", \"" + ADDRESS + "\", \"" + BIRTH_DATE + "\", " + PHONE_NUMBER + ");");
+	parser.execute("WRITE person;");
+}
+
+void remove_person(){
+	string NAME;
+	string BIRTH_DATE;
+	cout<<"Enter the person's name you would like to remove: "
+	cin<<NAME;
+	cout<<endl<<"Enter the person's birth date that you would like to remove: ";
+	cin>>BIRTH_DATE;
+	
+	parser.execute("DELETE FROM person WHERE name=\"" + NAME + "\" AND birth_date=\"" + BIRTH_DATE + "\";");
+	parser.execute("WRITE person;");
+}
+
