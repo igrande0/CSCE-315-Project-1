@@ -43,6 +43,33 @@ Application::~Application() {
 }
 
 void Application::main_menu() {
+	int input;
+	display_main_menu();
+	cin >> input;
+	if (input == 1)
+	{
+		//call update
+	}
+	else if (input == 2)
+	{
+		//call update
+	}
+	else if (input == 3)
+	{
+		//call update
+	}
+	else if (input == 4)
+	{
+		//call update
+	}
+	else if (input == 5)
+	{
+		//call update
+	}
+	else if (input == 6)
+	{
+		//call update
+	}
 	// LOOP
 	// display menu
 	// take in valid option #
@@ -50,6 +77,7 @@ void Application::main_menu() {
 }
 
 void Application::table_menu(string table) {
+	
 	// LOOP
 	// display menu
 	// take in valid option #
@@ -70,10 +98,39 @@ void Application::display_main_menu() {
 
 void Application::display_table_menu(string table) {
 	// CHANGE - these won't make sense and will need to be fixed somehow
-	cout << "How would you like to modify the" << table << " list? Enter the number of your choice.\n";
+	int choice; //not sure if this is the best way, but it's all I know
+	string tablename;
+	cout << "(1) Add a table\n";
+	cout << "(2) Remove a table\n";
+	cout << "(3) Update a table\n";
+	cout << "Indicate what you would like to do:\n";
+	cin >> choice;
+	if (choice == 1)
+	{
+		cout << "Please input the table name:\n";
+		cin >> tablename;
+		add(tablename, attributes);
+	}
+	else if (choice == 2)
+	{
+		cout << "Please input the table name:\n";
+		cin >> tablename;
+		remove(tablename, attributes);
+	}
+	else if (choice == 3)
+	{
+		cout << "Please input the table name:\n";
+		update(table, attributes);
+	}
+	else
+	{
+		throw runtime_error("Invalid Input");
+	}
+	
+	/*cout << "How would you like to modify the" << table << " list? Enter the number of your choice.\n";
 	cout << "(1) add a " << table << "\n";
 	cout << "(2) remove a" << table << "\n";
-	cout << "(3) update a" << table << "\n";
+	cout << "(3) update a" << table << "\n";*/
 }
 
 void Application::add(string table, vector<string> attributes){
