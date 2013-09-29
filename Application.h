@@ -32,6 +32,7 @@ class Application{
 		void remove(string table, vector<string> attributes);
 		void update(string table, vector<string> attributes);
 
+
 	public:
 		Application();
 		~Application();

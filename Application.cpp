@@ -9,9 +9,9 @@ Application::Application() {
 		"person's name, account number",
 		"bank name, account number"};	
 	vector<vector<string> > attribute_types {
-		{"VARCHAR(255)", "INT", "VARCHAR(255)"},
+		{"VARCHAR(255)", "INTEGER", "VARCHAR(255)"},
 		{"INTEGER", "VARCHAR(255)", "INTEGER"},
-		{"VARCHAR(255)", "VARCHAR(255)", "VARCHAR(255)", "VARCHAR(255)"},
+		{"VARCHAR(255)", "VARCHAR(255)", "VARCHAR(255)", "INTEGER"},
 		{"VARCHAR(255)", "VARCHAR(255)"},
 		{"VARCHAR(255)", "INTEGER"},
 		{"VARCHAR(255)", "INTEGER"}};
