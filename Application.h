@@ -27,10 +27,20 @@ class Application{
 		void display_main_menu();
 		void display_table_menu(string table);
 		void table_menu(string table);
+		
+		int main_menu();
+		int second_menu(int type);
+		void add_bank();
+		void remove_bank();
+		void update_bank();
+		void add_account();
+		void remove_account();
+		void add_person();
+		void remove_person();
 
-		void add(string table, vector<string> attributes);
-		void remove(string table, vector<string> attributes);
-		void update(string table, vector<string> attributes);
+		//void add(string table, vector<string> attributes);
+		//void remove(string table, vector<string> attributes);
+		//void update(string table, vector<string> attributes);
 
 	public:
 		Application();
