@@ -269,6 +269,43 @@ void Application::update(string table, vector<string> attributes,
 	// loop to ask what to change
 	// construct/call UPDATE
 	// WRITE
+	vector<string> user_attributes(keys.size());
+
+	// show existing table
+	cout << "\n\nExisting " << table << "s:\n";
+	parser.execute("SHOW " + table + ";");
+	cout << "\n";
+
+	// gather tuple info
+	for(unsigned int i = 0; i < keys.size(); ++i) {
+		cout << "Enter the " << keys[i] 
+				<< " of the " << table << " you want to update: ";
+		getline(cin, user_attributes[i]);
+	}
+	cout<<"Enter the type of attribute you want to change: ";
+	string ATT;
+	getline(cin, ATT);
+	cout<<endl<<"Enter the new value of this attribute: ";
+	string NEW_VALUE;
+	getline(cin, NEW_VALUE);
+	cout<<endl;
+
+	// construct UPDATE command
+	string command = "UPDATE " + table + " SET " + ATT + "=\"" + NEW_VALUE + "\" WHERE ";
+	for(unsigned int i=0; i<keys.size(); i++)
+		for(unsigned int j=0; j<attribute_types.size(); j++)
+			if(attribute_types[j] == keys[i]){
+				if(attribute_types[j] == "INTEGER")
+					command += keys[i] + "=" + user_attributes[i];
+				else
+					command += keys[i] + "=\"" + user_attributes[i] + "\"";
+				if(i != keys.size()-1)
+					command += " && ";
+			}
+	command += ";";
+
+	parser.execute(command);
+	parser.execute("WRITE " + table + ";");
 }
 
 void Application::enroll_all_clients() {
