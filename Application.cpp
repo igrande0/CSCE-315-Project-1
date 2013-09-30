@@ -173,27 +173,26 @@ void Application::display_table_menu(string table) {
 	cout << "(3) update a " << table << "\n";
 }
 
-
-void Application::add(string table, vector<string> attributes, vector<string> attribute_types){
-	vector<string> user_attributes(attributes.size());
-
+void Application::add(string table, vector<string> table_attributes, vector<string> attribute_types){
+	vector<string> user_attributes(table_attributes.size());
+	
 	// ignore any trailing characters
 	cin.ignore(1000,'\n');
-	
+
 	// collect attributes from user
-	for(unsigned int i = 0; i < attributes.size(); ++i) {
-		cout << "Enter the " << table << " " << attributes[i] << ": ";
+	for(unsigned int i = 0; i < table_attributes.size(); ++i) {
+		cout << "Enter the " << table << " " << table_attributes[i] << ": ";
 		getline(cin, user_attributes[i]);
 	}
 
 	// construct INSERT INTO command
 	string command = "INSERT INTO " + table + " VALUES FROM (";
-	for(unsigned int i = 0; i < attributes.size(); ++i) {
+	for(unsigned int i = 0; i < table_attributes.size(); ++i) {
 		if(attribute_types[i] == "INTEGER")
 			command += user_attributes[i];
 		else
 			command += "\"" + user_attributes[i] + "\"";
-		if(i != attributes.size()-1)
+		if(i != table_attributes.size()-1)
 			command += ",";
 	}
 	command += ");";
@@ -206,11 +205,32 @@ void Application::add(string table, vector<string> attributes, vector<string> at
 	// WRITE
 }
 
-void Application::remove(string table, vector<string> attributes, vector<string> attribute_types){
+void Application::remove(string table, vector<string> table_attributes, vector<string> attribute_types){
 	// EXAMPLE: DELETE FROM dots WHERE (y1 <= 0);
 	// loop to ask what conditions
 	// construct/call DELETE FROM
 	// WRITE
+	vector<string> user_attributes(table_attributes.size());
+
+	for(unsigned int i = 0; i < table_attributes.size(); ++i) {
+		cout << "Enter the " << table << " " << table_attributes[i] << " you want to remove: ";
+		cin >> user_attributes[i];
+	}
+
+	// construct INSERT INTO command
+	string command = "DELETE FROM " + table + " WHERE ";
+	for(unsigned int i = 0; i < table_attributes.size(); ++i) {
+		if(attribute_types[i] == "INTEGER")
+			command += table_attributes[i] + "=" + user_attributes[i];
+		else
+			command += table_attributes[i] + "=\"" + user_attributes[i] + "\"";
+		if(i != table_attributes.size()-1)
+			command += " AND ";
+	}
+	command += ";";
+
+	parser.execute(command);
+	parser.execute("WRITE " + table + ";");
 }
 
 void Application::update(string table, vector<string> attributes, vector<string> attribute_types){
