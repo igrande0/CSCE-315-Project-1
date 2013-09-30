@@ -43,16 +43,6 @@ class Application{
 		void display_main_menu();
 		void display_table_menu(string table);
 		void table_menu(int table_index);
-		
-		/*int main_menu();
-		int second_menu(int type);
-		void add_bank();
-		void remove_bank();
-		void update_bank();
-		void add_account();
-		void remove_account();
-		void add_client();
-		void remove_client();*/
 
 		void add(string table, vector<string> attributes, vector<string> attribute_types);
 		void remove(string table, vector<string> attributes,
@@ -61,6 +51,7 @@ class Application{
 			vector<string> attribute_types, vector<string> keys);
 
 		void enroll_all_clients();
+		void enrolled_people();
 
 	public:
 		Application();
