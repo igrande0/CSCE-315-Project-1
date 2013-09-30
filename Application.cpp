@@ -1,13 +1,13 @@
 #include "Application.h"
 
 Application::Application() {
-	/*vector<string> keys {
+	vector<string> keys {
 		"bank_name, bank routing_number",
 		"account_number, account_type",
 		"name, birthdate",
 		"client_name, bank_name",
 		"client_name, account_number",
-		"bank_name, account_number"};	*/
+		"bank_name, account_number"};	
 
 	// either open all tables or create all tables and save to disk
 	for(unsigned int i = 0; i < tables.size(); ++i)
@@ -125,24 +125,24 @@ void Application::main_menu() {
 	}
 }
 
-void Application::table_menu(int table_index) {
+void Application::table_menu(int t_index) {
 	while(true) {
 		char choice;
 
-		display_table_menu(tables[table_index]);
+		display_table_menu(tables[t_index]);
 		cin >> choice;
 		// ignore any trailing characters
 		cin.ignore(1000,'\n');
 
 		switch(choice) {
 		case '1':
-			add(tables[table_index], attributes[table_index], attribute_types[table_index]);
+			add(tables[t_index], attributes[t_index], attribute_types[t_index]);
 			break;
 		case '2':
-			remove(tables[table_index], attributes[table_index], attribute_types[table_index]);
+			remove(tables[t_index], attributes[t_index], attribute_types[t_index], table_keys[t_index]);
 			break;
 		case '3':
-			update(tables[table_index], attributes[table_index], attribute_types[table_index]);
+			update(tables[t_index], attributes[t_index], attribute_types[t_index], table_keys[t_index]);
 			break;
 		case 'q':
 			return;
@@ -206,13 +206,14 @@ void Application::add(string table, vector<string> table_attributes, vector<stri
 
 }
 
-void Application::remove(string table, vector<string> table_attributes, vector<string> attribute_types){
+void Application::remove(string table, vector<string> table_attributes,
+						 vector<string> attribute_types, vector<string> keys){
 	// EXAMPLE: DELETE FROM dots WHERE (y1 <= 0);
 	// loop to ask what conditions
 	// construct/call DELETE FROM
 	// WRITE
 
-	vector<string> user_attributes(table_attributes.size());
+	vector<string> user_attributes(keys.size());
 
 	// show existing table
 	cout << "\n\nExisting " << table << "s:\n";
@@ -221,28 +222,36 @@ void Application::remove(string table, vector<string> table_attributes, vector<s
 
 	// gather tuple info
 	for(unsigned int i = 0; i < table_attributes.size(); ++i) {
-		cout << "Enter the " << table_attributes[i] 
-			 << " of the "<< table << " you want to remove: ";
-		getline(cin, user_attributes[i]);
+		for(unsigned int j = 0; j < keys.size(); ++j) {
+			if(table_attributes[i] == keys[j]) {
+				cout << "Enter the " << table_attributes[i] 
+						<< " of the " << table << " you want to remove: ";
+				getline(cin, user_attributes[j]);
+			}
+		}
 	}
 
 	// construct DELETE FROM command
-	string command = "DELETE FROM " + table + " WHERE ";
-	for(unsigned int i = 0; i < table_attributes.size(); ++i) {
-		if(attribute_types[i] == "INTEGER")
-			command += table_attributes[i] + " == " + user_attributes[i];
-		else
-			command += table_attributes[i] + " == \"" + user_attributes[i] + "\"";
-		if(i != table_attributes.size()-1)
-			command += " && ";
+	string command = "DELETE FROM " + table + " WHERE (";
+	for(unsigned int i = 0; i < keys.size(); ++i) {
+		for(unsigned int j = 0; j < table_attributes.size(); ++j)
+			if(table_attributes[j] == keys[i]) {
+				if(attribute_types[j] == "INTEGER")
+					command += table_attributes[j] + " == " + user_attributes[i] + " ";
+				else
+					command += table_attributes[j] + " == \"" + user_attributes[i] + "\" ";
+				if(i != keys.size()-1)
+					command += " && ";
+			}
 	}
-	command += ";";
+	command += ");";
 
 	parser.execute(command);
 	parser.execute("WRITE " + table + ";");
 }
 
-void Application::update(string table, vector<string> attributes, vector<string> attribute_types){
+void Application::update(string table, vector<string> attributes,
+						 vector<string> attribute_types, vector<string> keys){
 	// EXAMPLE: UPDATE dots SET x1 = 0 WHERE x1 < 0;
 	// loop to ask what conditions
 	// loop to ask what to change

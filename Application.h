@@ -21,13 +21,13 @@ class Application{
 		vector<string> account_authorization{"client_name", "account_number"};
 		vector<string> account_host{"bank_name", "account_number"};
 
-		vector<string> keys {
-			"name, routing_number",
-			"number, type",
-			"name, birthdate",
-			"client_name, bank_name",
-			"client_name, account_number",
-			"bank_name, account_number"};	
+		vector<vector<string> > table_keys {
+			{"name", "routing_number"},
+			{"number", "type"},
+			{"name", "birthdate"},
+			{"client_name", "bank_name"},
+			{"client_name", "account_number"},
+			{"bank_name", "account_number"}};	
 
 		vector<vector<string> > attributes {bank_attributes, account_attributes, client_attributes,
 			bank_enrollment, account_authorization, account_host};
@@ -55,8 +55,10 @@ class Application{
 		void remove_client();*/
 
 		void add(string table, vector<string> attributes, vector<string> attribute_types);
-		void remove(string table, vector<string> attributes, vector<string> attribute_types);
-		void update(string table, vector<string> attributes, vector<string> attribute_types);
+		void remove(string table, vector<string> attributes,
+			vector<string> attribute_types, vector<string> keys);
+		void update(string table, vector<string> attributes,
+			vector<string> attribute_types, vector<string> keys);
 
 	public:
 		Application();
