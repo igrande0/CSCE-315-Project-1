@@ -1,13 +1,13 @@
 #include "Application.h"
 
 Application::Application() {
-	vector<string> keys {
-		"bank name, bank routing number",
-		"account number, account type",
+	/*vector<string> keys {
+		"bank_name, bank routing_number",
+		"account_number, account_type",
 		"name, birthdate",
-		"client's name, bank name",
-		"client's name, account number",
-		"bank name, account number"};	
+		"client_name, bank_name",
+		"client_name, account_number",
+		"bank_name, account_number"};	*/
 
 	// either open all tables or create all tables and save to disk
 	for(unsigned int i = 0; i < tables.size(); ++i)
@@ -102,13 +102,14 @@ void Application::second_menu(int type){
 void Application::main_menu() {
 	while(true) {
 		char choice;
+		const char ASCII_offset = '0';
 		display_main_menu();
 		cin >> choice;
 
 		switch(choice) {
 		case '1': case '2': case '3':
 		case '4': case '5': case '6':
-			table_menu(tables[choice-1]);
+			table_menu(tables[choice-ASCII_offset-1], choice-ASCII_offset-1);
 			break;
 		case 'q':
 			return;
@@ -121,21 +122,25 @@ void Application::main_menu() {
 	}
 }
 
-void Application::table_menu(string table) {
+void Application::table_menu(string table, int attribute_index) {
 	while(true) {
 		char choice;
+		const char ASCII_offset = '0';
 		display_table_menu(table);
 		cin >> choice;
 
 		switch(choice) {
 		case '1':
-			add(table, attributes[choice-1], attribute_types[choice-1]);
+			cout << choice-ASCII_offset-1;
+			add(table, attributes[attribute_index], attribute_types[attribute_index]);
 			break;
 		case '2':
-			remove(table, attributes[choice-1], attribute_types[choice-1]);
+			cout << choice-ASCII_offset-1;
+			remove(table, attributes[attribute_index], attribute_types[attribute_index]);
 			break;
 		case '3':
-			update(table, attributes[choice-1], attribute_types[choice-1]);
+			cout << choice-ASCII_offset-1;
+			update(table, attributes[attribute_index], attribute_types[attribute_index]);
 			break;
 		case 'q':
 			return;
@@ -149,19 +154,19 @@ void Application::table_menu(string table) {
 
 void Application::display_main_menu() {
 	// CHANGE THESE -  maybe? I think they sound stupid - Isaac
-	cout << "What would you like to do? Enter the number of your choice.\n";
+	cout << "\n\nWhat would you like to do? Enter the number of your choice.\n";
 	cout << "Enter 'q' at any time to exit this menu.\n";
-	cout << "(1) modify the bank list\n";
-	cout << "(2) modify the client list\n";
-	cout << "(3) modify the account list\n";
-	cout << "(4) modify the bank enrollment list\n";
-	cout << "(5) modify the account authorization list\n";
-	cout << "(6) modify the account host list\n";
+	cout << "(1) modify the bank entity\n";
+	cout << "(2) modify the account entity\n";
+	cout << "(3) modify the client entity\n";
+	cout << "(4) modify the bank enrollment relation\n";
+	cout << "(5) modify the account authorization relation\n";
+	cout << "(6) modify the account host relation\n";
 	// ADD queries somehow?
 }
 
 void Application::display_table_menu(string table) {
-	cout << "How would you like to modify the " << table << " list? Enter the number of your choice.\n";
+	cout << "\n\nHow would you like to modify the " << table << " list? Enter the number of your choice.\n";
 	cout << "Enter 'q' at any time to exit this menu.\n";
 	cout << "(1) add a " << table << "\n";
 	cout << "(2) remove a " << table << "\n";
@@ -171,11 +176,14 @@ void Application::display_table_menu(string table) {
 
 void Application::add(string table, vector<string> attributes, vector<string> attribute_types){
 	vector<string> user_attributes(attributes.size());
+
+	// ignore any trailing characters
+	cin.ignore(1000,'\n');
 	
 	// collect attributes from user
 	for(unsigned int i = 0; i < attributes.size(); ++i) {
 		cout << "Enter the " << table << " " << attributes[i] << ": ";
-		cin >> user_attributes[i];
+		getline(cin, user_attributes[i]);
 	}
 
 	// construct INSERT INTO command

@@ -14,20 +14,20 @@ class Application{
 
 		vector<string> tables {"bank", "account", "client", "enrollment", "authorization", "host"};
 
-		vector<string> bank_attributes {"name", "number", "address"};
+		vector<string> bank_attributes {"name", "routing_number", "address"};
 		vector<string> account_attributes {"number", "type", "balance"};
-		vector<string> client_attributes {"name", "address", "birthdate", "phone number"};
-		vector<string> bank_enrollment {"client name", "bank name"};
-		vector<string> account_authorization{"client name", "account number"};
-		vector<string> account_host{"bank name", "account number"};
+		vector<string> client_attributes {"name", "address", "birthdate", "phone_number"};
+		vector<string> bank_enrollment {"client_name", "bank_name"};
+		vector<string> account_authorization{"client_name", "account_number"};
+		vector<string> account_host{"bank_name", "account_number"};
 
 		vector<string> keys {
-			"name, routing number",
+			"name, routing_number",
 			"number, type",
 			"name, birthdate",
-			"client name, bank name",
-			"client name, account number",
-			"bank name, account number"};	
+			"client_name, bank_name",
+			"client_name, account_number",
+			"bank_name, account_number"};	
 
 		vector<vector<string> > attributes {bank_attributes, account_attributes, client_attributes,
 			bank_enrollment, account_authorization, account_host};
@@ -42,7 +42,7 @@ class Application{
 
 		void display_main_menu();
 		void display_table_menu(string table);
-		void table_menu(string table);
+		void table_menu(string table, int attribute_index);
 		
 		/*int main_menu();
 		int second_menu(int type);
