@@ -482,8 +482,7 @@ void Database::insert_view(string relation_name, string view_name){
 	vector<vector<string> >& relation_table = RELATION_LIST[relation_index];
 
 	// check for compatibility
-	if(view_table[0].size() != relation_table[0].size()
-	|| view_table[1].size() != relation_table[1].size()
+	if(view_table[1].size() != relation_table[1].size()
 	|| view_table[2].size() != relation_table[2].size())
 		throw runtime_error("insert view: incompatible tables");
 	for(unsigned int i = 0; i < view_table[2].size(); ++i)

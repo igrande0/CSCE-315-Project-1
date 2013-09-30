@@ -2,9 +2,9 @@
 
 Application::Application() {
 	vector<string> keys {
-		"bank_name, bank routing_number",
-		"account_number, account_type",
-		"name, birthdate",
+		"name, routing_number",
+		"number, type",
+		"full_name, birthdate",
 		"client_name, bank_name",
 		"client_name, account_number",
 		"bank_name, account_number"};	
@@ -102,7 +102,7 @@ void Application::second_menu(int type){
 void Application::main_menu() {
 	while(true) {
 		char choice;
-		const char ASCII_offset = '0';
+		const char ASCII_offset = 'a';
 
 		display_main_menu();
 		cin >> choice;
@@ -110,9 +110,12 @@ void Application::main_menu() {
 		cin.ignore(1000,'\n');
 
 		switch(choice) {
-		case '1': case '2': case '3':
-		case '4': case '5': case '6':
-			table_menu(choice-ASCII_offset-1);
+		case 'a': case 'b': case 'c':
+		case 'd': case 'e': case 'f':
+			table_menu(choice-ASCII_offset);
+			break;
+		case 'g':
+			enroll_all_clients();
 			break;
 		case 'q':
 			return;
@@ -135,13 +138,17 @@ void Application::table_menu(int t_index) {
 		cin.ignore(1000,'\n');
 
 		switch(choice) {
-		case '1':
+		case 'a':
+			cout << '\n';
+			parser.execute("SHOW " + tables[t_index] + ";");
+			break;
+		case 'b':
 			add(tables[t_index], attributes[t_index], attribute_types[t_index]);
 			break;
-		case '2':
+		case 'c':
 			remove(tables[t_index], attributes[t_index], attribute_types[t_index], table_keys[t_index]);
 			break;
-		case '3':
+		case 'd':
 			update(tables[t_index], attributes[t_index], attribute_types[t_index], table_keys[t_index]);
 			break;
 		case 'q':
@@ -156,23 +163,32 @@ void Application::table_menu(int t_index) {
 
 void Application::display_main_menu() {
 	// CHANGE THESE -  maybe? I think they sound stupid - Isaac
-	cout << "\n\nWhat would you like to do? Enter the number of your choice.\n";
+	cout << "\n\nWhat would you like to do? Enter the letter of your choice.\n";
 	cout << "Enter 'q' at any time to exit this menu.\n";
-	cout << "(1) modify the bank entity\n";
-	cout << "(2) modify the account entity\n";
-	cout << "(3) modify the client entity\n";
-	cout << "(4) modify the bank enrollment relation\n";
-	cout << "(5) modify the account authorization relation\n";
-	cout << "(6) modify the account host relation\n";
+	cout << "(a) modify or show the bank entity\n";
+	cout << "(b) modify or show the account entity\n";
+	cout << "(c) modify or show the client entity\n";
+	cout << "(d) modify or show the bank enrollment relation\n";
+	cout << "(e) modify or show the account authorization relation\n";
+	cout << "(f) modify or show the account host relation\n";
+	cout << "(g) enroll all existing clients into an existing bank\n";
 	// ADD queries somehow?
 }
 
 void Application::display_table_menu(string table) {
-	cout << "\n\nHow would you like to modify the " << table << " list? Enter the number of your choice.\n";
+	cout << "\n\nHow would you like to modify the " << table << " list? Enter the letter of your choice.\n";
 	cout << "Enter 'q' at any time to exit this menu.\n";
-	cout << "(1) add a " << table << "\n";
-	cout << "(2) remove a " << table << "\n";
-	cout << "(3) update a " << table << "\n";
+	cout << "(a) show all " << table << "s\n";
+	if(table == "account" || table == "enrollment" || table == "authorization") {
+		cout << "(b) add an " << table << "\n";
+		cout << "(c) remove an " << table << "\n";
+		cout << "(d) update an " << table << "\n";
+	}
+	else {
+		cout << "(b) add a " << table << "\n";
+		cout << "(c) remove a " << table << "\n";
+		cout << "(d) update a " << table << "\n";
+	}
 }
 
 void Application::add(string table, vector<string> table_attributes, vector<string> attribute_types){
@@ -221,14 +237,10 @@ void Application::remove(string table, vector<string> table_attributes,
 	cout << "\n";
 
 	// gather tuple info
-	for(unsigned int i = 0; i < table_attributes.size(); ++i) {
-		for(unsigned int j = 0; j < keys.size(); ++j) {
-			if(table_attributes[i] == keys[j]) {
-				cout << "Enter the " << table_attributes[i] 
-						<< " of the " << table << " you want to remove: ";
-				getline(cin, user_attributes[j]);
-			}
-		}
+	for(unsigned int i = 0; i < keys.size(); ++i) {
+		cout << "Enter the " << keys[i] 
+				<< " of the " << table << " you want to remove: ";
+		getline(cin, user_attributes[i]);
 	}
 
 	// construct DELETE FROM command
@@ -258,6 +270,36 @@ void Application::update(string table, vector<string> attributes,
 	// construct/call UPDATE
 	// WRITE
 }
+
+void Application::enroll_all_clients() {
+	// cross product of bank and clients
+	// selection of a certain bank
+	// projection of enrollment relation's fields
+	// insert view
+	string bank_name;
+	string routing_number;
+
+	// show existing table
+	cout << "\n\nExisting banks:\n";
+	parser.execute("SHOW bank;");
+	cout << "\n";
+
+	cout << "Enter the name of the bank you want to enroll clients in: ";
+	getline(cin, bank_name);
+	cout << "Enter the routing number of the bank you want to enroll clients in: ";
+	getline(cin, routing_number);
+
+	parser.execute("all_banks_clients <- client * bank;");
+	parser.execute("single_bank_clients <- select (name == \"" + 
+					bank_name + "\" && routing_number == " + routing_number + ") all_banks_clients;");
+	parser.execute("two_columns <- project (full_name, name) single_bank_clients;");
+	parser.execute("INSERT INTO enrollment VALUES FROM RELATION two_columns;");
+	parser.execute("WRITE enrollment;");
+	parser.execute("CLOSE all_banks_clients;");
+	parser.execute("CLOSE single_bank_clients;");
+	parser.execute("CLOSE two_columns;");
+}
+
 
 /*
 void Application::add_bank(){

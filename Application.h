@@ -16,7 +16,7 @@ class Application{
 
 		vector<string> bank_attributes {"name", "routing_number", "address"};
 		vector<string> account_attributes {"number", "type", "balance"};
-		vector<string> client_attributes {"name", "address", "birthdate", "phone_number"};
+		vector<string> client_attributes {"full_name", "home_address", "birthdate", "phone_number"};
 		vector<string> bank_enrollment {"client_name", "bank_name"};
 		vector<string> account_authorization{"client_name", "account_number"};
 		vector<string> account_host{"bank_name", "account_number"};
@@ -24,7 +24,7 @@ class Application{
 		vector<vector<string> > table_keys {
 			{"name", "routing_number"},
 			{"number", "type"},
-			{"name", "birthdate"},
+			{"full_name", "birthdate"},
 			{"client_name", "bank_name"},
 			{"client_name", "account_number"},
 			{"bank_name", "account_number"}};	
@@ -59,6 +59,8 @@ class Application{
 			vector<string> attribute_types, vector<string> keys);
 		void update(string table, vector<string> attributes,
 			vector<string> attribute_types, vector<string> keys);
+
+		void enroll_all_clients();
 
 	public:
 		Application();
