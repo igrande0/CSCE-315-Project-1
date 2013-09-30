@@ -354,7 +354,7 @@ void Database::print_table(const vector<vector<string > >& table) {
 	
 	for(unsigned int i = 1; i < table.size(); i++) {
 		for(unsigned int j = 0; j < table[i].size(); j++){
-			cout << left << setw(15);
+			cout << left << setw(25);
 			cout << table[i][j];
 		}
 		cout << endl;

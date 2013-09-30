@@ -42,7 +42,7 @@ class Application{
 
 		void display_main_menu();
 		void display_table_menu(string table);
-		void table_menu(string table, int attribute_index);
+		void table_menu(int table_index);
 		
 		/*int main_menu();
 		int second_menu(int type);

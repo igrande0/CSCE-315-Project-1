@@ -103,13 +103,16 @@ void Application::main_menu() {
 	while(true) {
 		char choice;
 		const char ASCII_offset = '0';
+
 		display_main_menu();
 		cin >> choice;
+		// ignore any trailing characters
+		cin.ignore(1000,'\n');
 
 		switch(choice) {
 		case '1': case '2': case '3':
 		case '4': case '5': case '6':
-			table_menu(tables[choice-ASCII_offset-1], choice-ASCII_offset-1);
+			table_menu(choice-ASCII_offset-1);
 			break;
 		case 'q':
 			return;
@@ -122,25 +125,24 @@ void Application::main_menu() {
 	}
 }
 
-void Application::table_menu(string table, int attribute_index) {
+void Application::table_menu(int table_index) {
 	while(true) {
 		char choice;
-		const char ASCII_offset = '0';
-		display_table_menu(table);
+
+		display_table_menu(tables[table_index]);
 		cin >> choice;
+		// ignore any trailing characters
+		cin.ignore(1000,'\n');
 
 		switch(choice) {
 		case '1':
-			cout << choice-ASCII_offset-1;
-			add(table, attributes[attribute_index], attribute_types[attribute_index]);
+			add(tables[table_index], attributes[table_index], attribute_types[table_index]);
 			break;
 		case '2':
-			cout << choice-ASCII_offset-1;
-			remove(table, attributes[attribute_index], attribute_types[attribute_index]);
+			remove(tables[table_index], attributes[table_index], attribute_types[table_index]);
 			break;
 		case '3':
-			cout << choice-ASCII_offset-1;
-			update(table, attributes[attribute_index], attribute_types[attribute_index]);
+			update(tables[table_index], attributes[table_index], attribute_types[table_index]);
 			break;
 		case 'q':
 			return;
@@ -174,10 +176,12 @@ void Application::display_table_menu(string table) {
 }
 
 void Application::add(string table, vector<string> table_attributes, vector<string> attribute_types){
+	// EXAMPLE: INSERT INTO baseball_players VALUES FROM ("Alexander", "Smith", "Pirates", 2, 150000);
+	// ask for every attribute
+	// construct/call INSERT INTO
+	// WRITE
+
 	vector<string> user_attributes(table_attributes.size());
-	
-	// ignore any trailing characters
-	cin.ignore(1000,'\n');
 
 	// collect attributes from user
 	for(unsigned int i = 0; i < table_attributes.size(); ++i) {
@@ -199,10 +203,7 @@ void Application::add(string table, vector<string> table_attributes, vector<stri
 
 	parser.execute(command);
 	parser.execute("WRITE " + table + ";");
-	// EXAMPLE: INSERT INTO baseball_players VALUES FROM ("Alexander", "Smith", "Pirates", 2, 150000);
-	// ask for every attribute
-	// construct/call INSERT INTO
-	// WRITE
+
 }
 
 void Application::remove(string table, vector<string> table_attributes, vector<string> attribute_types){
@@ -210,22 +211,30 @@ void Application::remove(string table, vector<string> table_attributes, vector<s
 	// loop to ask what conditions
 	// construct/call DELETE FROM
 	// WRITE
+
 	vector<string> user_attributes(table_attributes.size());
 
+	// show existing table
+	cout << "\n\nExisting " << table << "s:\n";
+	parser.execute("SHOW " + table + ";");
+	cout << "\n";
+
+	// gather tuple info
 	for(unsigned int i = 0; i < table_attributes.size(); ++i) {
-		cout << "Enter the " << table << " " << table_attributes[i] << " you want to remove: ";
-		cin >> user_attributes[i];
+		cout << "Enter the " << table_attributes[i] 
+			 << " of the "<< table << " you want to remove: ";
+		getline(cin, user_attributes[i]);
 	}
 
-	// construct INSERT INTO command
+	// construct DELETE FROM command
 	string command = "DELETE FROM " + table + " WHERE ";
 	for(unsigned int i = 0; i < table_attributes.size(); ++i) {
 		if(attribute_types[i] == "INTEGER")
-			command += table_attributes[i] + "=" + user_attributes[i];
+			command += table_attributes[i] + " == " + user_attributes[i];
 		else
-			command += table_attributes[i] + "=\"" + user_attributes[i] + "\"";
+			command += table_attributes[i] + " == \"" + user_attributes[i] + "\"";
 		if(i != table_attributes.size()-1)
-			command += " AND ";
+			command += " && ";
 	}
 	command += ";";
 
