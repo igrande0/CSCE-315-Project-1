@@ -19,7 +19,7 @@ bool Parser::execute(string input) {
 		parse();
 	}
 	catch(exception& e) {
-		cout  << "error: " << e.what() << endl;
+		//cout  << "error: " << e.what() << endl;
 		ret_val = false;
 	}
 	/*cout << "\n\nTOKENS:\n";
@@ -341,7 +341,7 @@ void Parser::open() {
 	vector<Token> old_tokens = tokens;
 	vector<string> old_raw_data = raw_data;
 
-	cout << "===============================================================\n";
+	//cout << "===============================================================\n";
 	string NEW_LINE;
 	getline(INPUT_FILE, NEW_LINE);
 	if(execute(NEW_LINE) == false) {
@@ -355,7 +355,7 @@ void Parser::open() {
 		getline(INPUT_FILE, NEW_LINE);
 		execute(NEW_LINE);
 	}
-	cout << "===============================================================\n";
+	//cout << "===============================================================\n";
 	INPUT_FILE.close();
 
 	tokens = old_tokens;

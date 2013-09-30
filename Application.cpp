@@ -118,7 +118,7 @@ void Application::display_main_menu() {
 	cout << "(e) modify or show the account authorization relation\n";
 	cout << "(f) modify or show the account host relation\n";
 	cout << "(g) enroll all existing clients into an existing bank\n";
-	cout << "(h) show all enrolled people\n";
+	cout << "(h) show all not enrolled in a bank\n";
 	// ADD queries somehow?
 }
 
@@ -164,7 +164,8 @@ void Application::add(string table, vector<string> table_attributes, vector<stri
 	}
 	command += ");";
 
-	parser.execute(command);
+	if(parser.execute(command) == false)
+		cout<<"insert: problem"<<endl;
 	parser.execute("WRITE " + table + ";");
 
 }
@@ -205,7 +206,8 @@ void Application::remove(string table, vector<string> table_attributes,
 	}
 	command += ");";
 
-	parser.execute(command);
+	if(parser.execute(command) ==  false)
+		cout<<"Delete: problem"<<endl;
 	parser.execute("WRITE " + table + ";");
 }
 
@@ -248,9 +250,11 @@ void Application::update(string table, vector<string> attributes,
 			command += " && ";
 	}
 	command += ";";
-	cout<<command<<endl;
-	parser.execute(command);
-	parser.execute("WRITE " + table + ";");
+	//cout<<command<<endl;
+	if(parser.execute(command) == false)
+		cout<<"Update: problem"<<endl;
+	else if(parser.execute("WRITE " + table + ";") == false)
+		cout<<"Update: problem"<<endl;
 }
 
 void Application::enroll_all_clients() {
@@ -271,25 +275,38 @@ void Application::enroll_all_clients() {
 	cout << "Enter the routing number of the bank you want to enroll clients in: ";
 	getline(cin, routing_number);
 
-	parser.execute("all_banks_clients <- client * bank;");
-	parser.execute("single_bank_clients <- select (name == \"" + 
-					bank_name + "\" && routing_number == " + routing_number + ") all_banks_clients;");
-	parser.execute("two_columns <- project (full_name, name) single_bank_clients;");
-	parser.execute("INSERT INTO enrollment VALUES FROM RELATION two_columns;");
-	parser.execute("WRITE enrollment;");
-	parser.execute("CLOSE all_banks_clients;");
-	parser.execute("CLOSE single_bank_clients;");
-	parser.execute("CLOSE two_columns;");
+	if(parser.execute("all_banks_clients <- client * bank;") == false)
+		cout<<"Enrol all clients: non existent bank"<<endl;
+	else if(parser.execute("single_bank_clients <- select (name == \"" + bank_name + "\" && routing_number == " + routing_number + ") all_banks_clients;") == false)
+		cout<<"Enroll all clients: problem"<<endl;
+	else if(parser.execute("two_columns <- project (full_name, name) single_bank_clients;") == false)
+		cout<<"Enroll all clients: problem"<<endl;
+	else if(parser.execute("INSERT INTO enrollment VALUES FROM RELATION two_columns;") == false)
+		cout<<"Enroll all clients: problem"<<endl;
+	else if(parser.execute("WRITE enrollment;") == false)
+		cout<<"Enroll all clients: problem"<<endl;
+	else{
+		parser.execute("CLOSE all_banks_clients;");
+		parser.execute("CLOSE single_bank_clients;");
+		parser.execute("CLOSE two_columns;");
+	}
 }
 
 void Application::enrolled_people(){
-	parser.execute("proj_people <- project (full_name, name) client;");
-	parser.execute("enrolled_people <- project (client_name, name) bank_enrollment;");
+	if(parser.execute("proj_people <- project (full_name) client;") == false)
+		cout<<"Enrolled people: problem"<<endl;
+	else if(parser.execute("enrolled_people <- project (client_name) enrollment;") == false)
+		cout<<"Enrolled people: problem"<<endl;
 	//set union of proj_people and enrolled_people
-
-	parser.execute("SHOW proj_people;"); //display result table
-	parser.execute("CLOSE proj_people;");
-	parser.execute("CLOSE enrolled_people;");
+	else if(parser.execute("result_view <- proj_people - enrolled_people;") == false)
+		cout<<"Enrolled people: problem"<<endl;
+	else if(parser.execute("SHOW result_view;") == false) //display result table
+		cout<<"Enrolled people: problem"<<endl;
+	else{
+		parser.execute("CLOSE proj_people;");
+		parser.execute("CLOSE enrolled_people;");
+		parser.execute("CLOSE result_view;");
+	}
 }
 
 
